@@ -1,6 +1,6 @@
 ---
 name: peec-ai-tracking-strategy-builder
-description: Build or refine a Peec AI tracking strategy as an iterative workflow. Phase A loops Intake → Strategy → Write → Analyse, each producing concrete Peec configuration changes and findings that feed the next iteration. Phase B (optional, terminal) produces a stakeholder presentation once the strategy has stabilised. Works for brand-new projects and for existing projects that need rationalising. Load whenever the user mentions Peec AI strategy, Peec setup, Peec onboarding, "what should we track in Peec", "build/improve our Peec project", Peec prompt rationalisation, Peec rebuild, or AI visibility strategy for a brand using Peec. Also triggers on Phase B / retrospective requests — stakeholder presentation, deck, or brief that explains an existing Peec strategy; "explain our Peec setup", "document our tracking strategy", "analyse our current Peec project", "what are we tracking in Peec and why". Companion to `peec-ai-mcp` (recommended; tool mechanics).
+description: Build or refine a Peec AI tracking strategy as an iterative workflow. Phase A loops Intake → Strategy → Write → Analyse, each producing concrete Peec configuration changes and findings that feed the next iteration. Phase B (optional, terminal) produces a stakeholder presentation once the strategy has stabilised. Works for brand-new projects and for existing projects that need rationalising. Load whenever the user mentions Peec AI strategy, Peec setup, Peec onboarding, "what should we track in Peec", "build/improve our Peec project", Peec prompt rationalisation, Peec rebuild, or AI visibility strategy for a brand using Peec. Also triggers on Phase B / retrospective requests: stakeholder presentation, deck, or brief that explains an existing Peec strategy; "explain our Peec setup", "document our tracking strategy", "analyse our current Peec project", "what are we tracking in Peec and why". Companion to `peec-ai-mcp` (recommended; tool mechanics).
 version: 1.0.0
 license: CC-BY-4.0
 origin: https://github.com/rebelytics/peec-ai-tracking-strategy-builder
@@ -188,6 +188,52 @@ visible, and lands as "their branded visibility is 93% — they're doing
 great" with the stakeholder. In stakeholder contexts, captions get
 filtered, numbers survive, and only the bigger number is remembered.
 
+**The no-filter `get_brand_report` blend silently inflates the own
+brand against competitors.** A `get_brand_report` call with no tag /
+topic filter returns visibility computed across **all** prompts in
+scope — branded and non-branded combined. The blended figure is
+mathematically valid for any single brand individually, but as a
+**competitive comparison** it is structurally inflated for the own
+brand:
+
+- On branded prompts, the own brand scores ~95% by construction (the
+  brand name is in the prompt, so the response nearly always names
+  it).
+- On non-branded prompts, the own brand scores at its real
+  discoverability level (e.g. ~50%).
+- The blend is dominated by whichever cohort is larger.
+
+But every tracked competitor is measured on the **same** branded
+prompts about the own brand, where competitors score ~0% (the prompt
+isn't about them, so they aren't named). This means the blended
+figure puts the own brand at a near-95% on the branded slice while
+holding every competitor at near-0% on the same slice — the blended
+roster comparison is structurally asymmetric and the own brand looks
+stronger than the competitive picture warrants.
+
+**Hard rule — competitive comparisons.** Any roster comparison
+(Phase B or Phase A) filters to non-branded only. Never report a
+no-filter `get_brand_report` blend as a competitive headline.
+
+**Worked example (composition shape, not just numbers).** Initial
+deck reported the own brand at "#1 in category visibility, 53%" —
+this was the no-filter blend across roughly 70 prompts (a small
+branded slice plus a much larger non-branded slice). Recomputed on
+non-branded only, the own brand's figure dropped into the high
+40s, essentially tied with the next-ranked rival in the low 50s. A
+different headline. The 53% was the own brand's branded ~95%
+pulling its blend up, while every competitor's blend was held flat
+by their ~0% on the same branded prompts. Competitors had no
+equivalent inflation pathway.
+
+This is the same family of error as the §14.2 "summing rates across
+brands" hard rule — applied to the **time / instrument axis** instead
+of the brand axis. Both rules generalise: aggregating across two
+distinct measurement instruments doesn't just produce uninterpretable
+numbers; when one instrument has structural asymmetries between the
+own brand and competitors (as branded prompts do), the aggregate
+silently inflates the own brand.
+
 ### 3.2 Provenance
 
 Every claim in findings must be traceable to a Peec tool call (which
@@ -291,7 +337,7 @@ now enforce a visible intake summary gate (see those sections). This
 principle explains *why* the gate exists.
 
 **Recurrence after structural fix.** The same failure mode recurred even
-after §8.3 was restructured into named paths (§8.3.1/§8.3.2/§8.3.3a–c).
+after §8.3 was restructured into named paths (§8.3.1/§8.3.2/§8.3.3).
 When discovered mid-run, recovery is not optional. Three named shapes
 govern what the failure looks like; §3.9 governs how to recover.
 
@@ -337,7 +383,7 @@ synthetic substitutes.
 2. Name the skip in-session: "I see Ring 3 external data intake was
    skipped — I need to run that now before the Strategy can be trusted."
 3. Run the user-ask in the mode the skipped step specifies (batched
-   AskUserQuestion for Ring 3 §8.3.3b; attachment request for §8.3.1 data
+   AskUserQuestion for Ring 3 §8.3.3; attachment request for §8.3.1 data
    dump paths).
 4. Only after the user has actually provided the data (or explicitly
    declined and taken ownership of the gap in writing) may the skill
@@ -2174,7 +2220,7 @@ it rather than guess at intent split. See §8.3.3a item 3 for the full
 revenue-data handling rules (navigational exclusion, don't-shrink-on-
 revenue-alone, transient/price-driven cluster caveats).
 
-**Symptom:** Landing-page revenue analysis shows 10-25% (or more) of
+**Symptom:** Landing-page revenue analysis shows 10-25 % (or more) of
 commerce revenue concentrating on sale / clearance / outlet / discount
 URLs. No prompts in the tracked set address that intent explicitly —
 the existing Category and Product topics cover steady-state discovery
@@ -2374,12 +2420,97 @@ in the rest", which are materially different strategic positions.
    Pouring generic content into the topic as a whole will not move
    the sub-area that's invisible; the pattern is sub-area-specific.
 
+**Confirming diagnostic — platform-mention mining (§13.10).** The
+decomposition above infers ranking-dominance from outcome metrics;
+fanout query text can prove it one level earlier in the causal chain.
+Grep the fanout queries for the vertical's candidate ranking bodies by
+name — a high named-source share (e.g. ~20%+ of all fanout queries
+naming the same one or two directories, with tier vocabulary and year
+qualifiers) confirms the engine literally searches the ranking bodies
+before answering, and identifies exactly which bodies gate visibility.
+That narrows step 4's submission/PR targets to the named bodies rather
+than the long tail of directories. See §13.10 for the procedure.
+
 **Reporting implication:** Phase B attribution should disclose that
 a single-firm (or single-brand) Peec project in a ranking-dominated
 vertical is inherently biased toward the own brand's focus sub-areas
 (§14.14). The #1 position this project reports describes "most
 coverage within our chosen sub-areas"; a firm measured against its
 own sub-areas would show a different picture.
+
+### 11.20 Different page types earn citations via different recipes
+
+**Symptom:** A "what makes a high-citing page" pattern surfaced from
+analysis on one page genre (e.g. expertise / practice-area pages)
+gets applied as a generic improvement recipe across the entire site,
+including page genres where the recipe doesn't fit. The most common
+failure shape is to derive a recipe from a high-citing **expertise
+page** and then evaluate every page through that same recipe — at
+which point a high-citing **insights hub** page looks like it's
+"missing" the recipe ingredients even though it's outperforming the
+expertise pages on citation rate.
+
+**Diagnosis:** AI engines treat different page genres as different
+classes of evidence. The features that make an expertise page citable
+are not the features that make a hub page citable, and not the
+features that make a comparison-style listicle citable. Each genre
+has its own citation recipe; conflating them produces wrong actions.
+
+Three observed recipes (illustrative — not exhaustive):
+
+- **Expertise / practice-area pages.** Specific quantitative claims
+  with named sources: deal counts with attribution, named awards
+  with years, named directory tiers, attributed client / partner
+  quotes, practice-specific named expert counts. The mechanism is
+  "the page contains hard evidence the engine can lift verbatim."
+- **Insights hub pages.** Strong positioning at the top, structured
+  sub-topic framing (named pillars, value-chain breakdown, taxonomy
+  diagram), and large content-cluster depth (50+ regularly-updated
+  publications, organised by named sub-topic). The mechanism is
+  "the page reads as the canonical entry point to a topic the brand
+  owns at depth."
+- **Comparison / listicle / "best of" pages** (typically
+  third-party). Multi-brand coverage with consistent attribute
+  structure across entries (price, feature, rating, year, named
+  reviewer). The mechanism is "the page reads as a structured
+  reference table the engine can sample from."
+
+**Action:**
+
+1. **Classify the page first, then apply the recipe.** Before
+   attributing a page's high or low citation rate to any specific
+   content element, classify the page genre. Use the recipe for
+   that genre as the comparison baseline, not the recipe from a
+   different genre.
+2. **Don't recommend recipe ingredients from one genre on a page of
+   a different genre.** "Add specific deal counts to the AI Insights
+   hub" is the wrong recommendation; the hub doesn't fail by lacking
+   deal counts, and adding them won't move citation rate. The right
+   recommendation is "deepen the content cluster" or "tighten the
+   pillar framing", per the hub recipe.
+3. **In Phase B side-by-side comparisons across page genres, frame
+   the contrast as different recipes, not different scores.** A
+   slide that compares an expertise page (1.04× citation rate) and a
+   hub page (1.80× citation rate) should explain *why each is
+   citable* (different mechanism) rather than treating one as the
+   baseline and the other as the gap.
+
+**Anti-pattern.** Surfacing a content-element pattern from one
+high-citing expertise page (e.g. "this practice-area page has named
+directory tiers and attributed quotes; that's the recipe") and then
+listing the same elements as "missing" on a high-citing hub page on
+a comparison slide. The hub page isn't missing them — it's earning
+citations through a different mechanism. The comparison slide reads
+as a critique of a page that is in fact outperforming the page being
+held up as the recipe source.
+
+**Reporting implication:** When a deck includes a side-by-side
+comparison of two pages with different citation rates, classify both
+pages by genre before attributing the rate difference to specific
+content elements. If the genres differ, the rate difference may not
+be a content-recipe gap at all — it may be a different recipe
+working at a different intensity, which is a different strategic
+implication.
 
 ---
 
@@ -2862,6 +2993,43 @@ reversibility risk, and deletes / reframes are harder to undo. Do
 not let "mid-loop additive writes" expand into shortcuts for higher-
 risk changes.
 
+**Prompt-set-stability check before any trend / drift finding.**
+Before producing any trend, time-series, or drift finding (visibility
+over time, position drift, SoV trajectory, sentiment trend, etc.),
+confirm that no `create_prompt`, prompt-text `update_prompt` (i.e.
+reframe), or `delete_prompt` operations landed inside the measurement
+window. The intake state's write-wave timestamps are the source of
+truth for this check. If a write wave landed inside the window, the
+metric's denominator changed mid-flight — day N's number is computed
+against a different prompt cohort than day N+1's, and a continuous
+time series visualises a measurement-shift artefact rather than a
+real movement. Either truncate the trend to the longest sub-window
+where the prompt set was stable, or drop the trend finding and use
+snapshot metrics only. Document the dates of the write waves
+alongside the finding so a future loop can see the constraint.
+
+**Carry-forward claim re-verification.** Findings files are working
+memory, not source-of-truth: a claim that travelled from a previous
+loop's findings, a previous session, or a different analyst into the
+current findings does not inherit the original analyst's verification.
+Any factual claim carried forward from a prior findings file must be
+re-verified before it appears in a stakeholder-facing surface (Phase B
+deck, written summary, client email). The original analyst's
+confidence does not transfer; the new authority context resets the
+verification bar. The verification record is added to the new findings
+file with date and source.
+
+A practical labelling pattern when consuming a prior findings file:
+mark each carried-forward claim as one of (a) re-verified in this
+session against fresh evidence; (b) carried forward without
+re-verification — to be caveated or dropped before any stakeholder
+surface; (c) data-driven and self-verifying because pulled fresh from
+Peec in this session (e.g. a current visibility figure). Only (a)
+and (c) belong on stakeholder slides. Carrying (b) into a deck
+unflagged is a quiet credibility leak — the claim looks right, nobody
+catches it, and when a stakeholder asks "is this true?" the chain of
+evidence stopped several sessions ago.
+
 ### 13.7 Analyse-phase maturity tiers (quantitative vs qualitative)
 
 Analyse maturity has two axes that progress at different rates:
@@ -2891,6 +3059,41 @@ wave < 24h ago, treat the project as Tier 0 for quantitative findings
 even if aggregate chat count looks sufficient. Track the write-wave
 timestamp in the persistence store so the next loop can read it
 without re-inferring.
+
+**Stable-cohort gate for the trend tier (Tier 3 and any time-series
+finding).** Trend findings — visibility, SoV, position, sentiment,
+retrieval-share, or any rate plotted day-over-day — require the
+tracked prompt set to have been **unchanged for the full measurement
+window plus a 24-hour buffer before the start of the window**. If a
+`create_prompt`, prompt-text `update_prompt`, or `delete_prompt`
+operation landed inside the window (or inside the buffer), the time
+series is measurement-confounded: day N's number is computed against a
+different cohort than day N+1's, and the chart visualises an
+instrument shift rather than a real movement. In that state, the
+trend tier collapses to Tier 0 *for trend purposes* regardless of
+how mature the cohort is in absolute terms. Use snapshot metrics
+instead, or truncate the window to the longest sub-window with a
+stable cohort. The same rule applies to cross-loop deltas: if the
+prompt set changed between Loop N and Loop N+1, the delta is not a
+movement, it's an apples-to-oranges comparison and must be flagged
+as such or dropped.
+
+**Engine-side drift — the gate's second instrument.** The stable-cohort
+gate holds the tracked prompt set constant, but rate trends need stable
+instruments on BOTH sides: the tracked cohort and the measuring engine.
+The engine's own behaviour drifts over time — model updates change how
+many fanout queries it issues per chat and how it phrases them — and
+that drift can move fanout-derived ratios substantially with no change
+on the brand side. Observed shape: a named-source share in fanout
+queries rose from single digits to ~30% across a six-week window on an
+unchanged prompt set, while fanout volume per day roughly halved — the
+engine issued fewer, more source-anchored queries later in the window.
+Trend claims on fanout-derived ratios must therefore report the per-day
+fanout volume alongside the share, and frame shifts as "engine
+behaviour + content landscape" movement, not brand movement. When the
+engine itself drifts, report the drift as context, not the brand as
+mover. This applies with most force to fanout mining (§13.10) but in
+principle to any metric whose denominator is engine-generated.
 
 **Day-window as a recommendation, not a hard gate.** The 7-day / 30-day
 / 60-day thresholds above are recommended defaults for signal maturity,
@@ -2926,6 +3129,63 @@ on a benchmark-goal project at Tier 0 is not circumventing maturity
 discipline — it is matching deliverable shape to the project's
 stated goal. Capture the project goal in the intake state so Phase B
 timing decisions can reference it without re-asking.
+
+### 13.7.1 Cross-page verification before attributing content elements as "weakness"
+
+When attributing a content element on a low-performing page as a
+**weakness** ("this page underperforms because it has X" / "this page
+underperforms because it lacks Y"), verify that element across at
+least three other pages — including at least one strong performer —
+to confirm the element actually patterns with performance.
+
+A single low-performing page does not validate a causal claim. The
+element may be a **template feature** (a default carousel, a stock
+sidebar block, a navigation widget) shared across many pages
+regardless of citation outcomes — in which case its presence /
+absence on the low-performing page is correlation, not causation.
+Cross-page verification is the cheapest way to distinguish
+element-as-cause from element-as-noise.
+
+**Procedure:**
+
+1. Identify the element being framed as a weakness on the low-
+   performing page.
+2. Pick at least three other pages from the same page genre /
+   template family. Include at least one strong performer (top-tier
+   citation rate) and at least one mid-performer.
+3. For each, check whether the element is present and at what
+   prominence.
+4. Pattern-test: does the element's presence pattern with citation
+   performance? If a strong performer also has the element, OR a
+   mid-performer lacks it, the element is unrelated to performance —
+   drop the framing.
+
+**Worked example.** A carousel of news items at the top of a page
+was framed as a weakness on a low-citing expertise page. Cross-
+checking five expertise pages revealed: low-citer (carousel
+present), mid-citer 1 (carousel present), mid-citer 2 (no
+carousel), strong performer (no carousel), weak performer (no
+carousel). The carousel doesn't pattern with citation performance
+— it's a template option some pages turn on. The actual driver of
+the citation difference was the specific quantitative content
+(deal numbers, named awards, named directories with years, client
+quotes) per the §11.20 expertise-page recipe. The carousel framing
+was dropped from the deck.
+
+**Anti-pattern.** Naming a content element as a weakness based on a
+single low-performing page, without checking the element across
+other pages of the same genre. False-positive content critiques
+erode the deck's credibility (the user can spot-check one and find
+it doesn't replicate) and waste optimisation effort (the dev team
+spends cycles changing an element that won't move the metric).
+
+**Why this is its own gate.** §13.7's maturity tiers govern when
+quantitative findings can stand; this rule governs when *causal*
+content claims can stand. The maturity-tier gate doesn't catch this
+class of error because the underlying numbers are defensible — the
+problem is in the element-attribution layer above the numbers. The
+fix is structural: every "page X underperforms because of element Y"
+claim runs the cross-page check before being framed in a deliverable.
 
 ### 13.8 Qualitative chat reading is peer analysis, not detection verification
 
@@ -3007,6 +3267,82 @@ correction request, sponsored placement, nothing).
 A URL gap with unread content is a data point. A URL gap with read
 content is a brief. Build the brief.
 
+**Host classification before treating any gap URL as an editorial
+target.** Gap reports surface every URL where competitors appear and
+the own brand doesn't — including URLs on competitor-owned domains
+where the own brand cannot realistically be added. Before treating any
+gap URL as an editorial target, classify the URL's host against the
+tracked brand roster (`list_brands.domains`). Three sub-cases apply:
+
+- **Competitor-owned homepage / category page / product page** — out
+  of scope. The competitor cannot realistically include a rival brand
+  on its own commercial pages. Drop from outreach analysis. Recording
+  the URL in findings is fine; surfacing it as an editorial gap to the
+  stakeholder is not.
+- **Competitor-owned listicle / comparison / "best of" page that ranks
+  multiple brands including direct rivals** — in scope, *but flag
+  explicitly as competitor-owned* in any deliverable. Outreach
+  feasibility depends on the competitor's editorial policy; treat as a
+  case-by-case judgement rather than a default outreach target.
+- **Competitor-owned editorial / blog content that doesn't rank
+  competitors** — out of scope (typical case). The competitor's
+  editorial control over its own blog is not negotiable.
+
+The unfiltered gap list from `get_url_report` / `get_domain_report`
+is a data surface; the filtered list — competitor own-domains
+removed, multi-brand listicles flagged — is the actionable outreach
+surface. Conflating the two ("you want me to ask Linda Seeds to
+feature their direct competitor on their homepage?") surfaces
+unactionable recommendations and erodes credibility even though the
+underlying retrieval data is correct. The question that actually
+needs answering is *"is it realistic for us to appear here?"*, and
+the answer depends on who controls the page, not just on retrieval
+volume.
+
+**Brand-detection verification — "brand X absent" has at least three
+different causes.** When a URL gap report flags "brand X absent" on a
+page that survives host classification (i.e. is a legitimate
+editorial target, not a competitor-owned page), a "brand absent"
+signal can come from at least three distinct causes — only one of
+which is a real action:
+
+- **(a) Cache-extraction miss.** Peec's `get_url_content` uses
+  Mozilla Readability + Turndown GFM, which can silently strip
+  mid-page sections (see `peec-ai-mcp` §6.6 Failure mode C). If
+  brand X sits in a section Readability removed, both the cached
+  content AND Peec's `mentioned_brand_ids` detection layer (running
+  on the same truncated content) miss it. The brand is genuinely on
+  the page; the gap signal is a tooling artefact. **No action — log
+  as a Peec brand-detection limitation in findings.**
+- **(b) AI-engine retrieval bias.** The page contains brand X, but
+  the AI engines that retrieve this URL preferentially cite earlier
+  / more prominent sections of the page and skip the section
+  containing brand X. The brand is on the page but not in the
+  *resulting AI response text* — `mentioned_brand_ids` correctly
+  records absence in chats, while the page itself is fine. The
+  underlying issue is the page's structural hierarchy, not absence.
+  **Out of own-brand control — no actionable outreach.**
+- **(c) Genuine absence.** Brand X is not on the page. **This is the
+  only case where an editorial outreach action is warranted.**
+
+Before treating any gap URL as an editorial action item, run a
+browser-verification step (open the URL in a real browser, search
+the rendered DOM for brand X) to disambiguate cases (a)/(b) from
+(c). The cost of one browser-verification call per candidate URL is
+much lower than the cost of an embarrassing wrong-action item that
+turns out to rest on a Readability extraction bug. See §14.6 for
+where this verification fits in the deck-build pipeline and §15.3
+for the pre-Phase-B gate that codifies it.
+
+**Anti-pattern.** Treating a Peec `mentioned_brand_ids` "brand
+absent" signal on a gap URL as automatically actionable. The signal
+is rolled up from text matching against retrieved chat content
+(case b) plus cached page content (case a) — multiple distinct
+phenomena produce the same downstream signal. Without
+disambiguation, action items are betting on the wrong cause and
+damage stakeholder trust when the user spot-checks one and finds
+the brand is, in fact, on the page.
+
 ### 13.10 Fanout mining is a continuous refinement signal, not an intake-only tool
 
 `list_search_queries` (see `peec-ai-mcp` §7.41) surfaces what ChatGPT
@@ -3041,7 +3377,31 @@ Run fanout mining as a standing Analyse activity:
    law firms for fraud recovery" that fans out to "UK firms
    specialising in asset tracing" is telling you where to place the
    next prompt slot.
-3. **Engine-scope caveat.** Fanout data surfaces only from ChatGPT
+3. **Platform-mention mining (ranking-dominated verticals).** Grep the
+   fanout `query_text` for the vertical's candidate ranking bodies,
+   directories, and platforms by name. A high named-source share
+   confirms — at the query level, one step earlier in the causal chain
+   than §11.19's visibility decomposition — that the vertical is
+   ranking-dominated, and identifies WHICH bodies gate visibility.
+   Observed shape: in a professional-services vertical, ~20%+ of all
+   fanout queries named one of exactly two ranking directories, with
+   tier vocabulary and year qualifiers in the query text and zero
+   mentions of any other directory or platform. That sharpens the
+   §11.19 action considerably: submission and PR effort targets the
+   named bodies only, not the long tail of directories. The general
+   principle: when an engine names a specific gatekeeper source class
+   in its queries, that source class is the visibility gate, with
+   higher confidence than any inference from outcome metrics. §11.19
+   cross-references this as its confirming diagnostic.
+4. **Trend caveat — engine behaviour drifts.** Fanout-derived
+   time-series carry a confounder the stable-cohort gate (§13.7)
+   doesn't cover: the engine's own query-generation behaviour changes
+   over time (fanout volume per chat, query phrasing style). Any trend
+   claim on a fanout ratio must report the per-day fanout volume
+   alongside the share, and frame shifts as engine-behaviour +
+   content-landscape movement rather than brand movement. See the
+   engine-side drift extension in §13.7.
+5. **Engine-scope caveat.** Fanout data surfaces only from ChatGPT
    currently (peec-ai-mcp §7.41). For AI Overview and Copilot, fall
    back to the chat-level `sources` array as the retrieval signal.
    Phrase findings as "what ChatGPT searches for", not "what the AI
@@ -3274,9 +3634,7 @@ Skills that reference `get_actions` without separating the two trust
 surfaces will propagate Peec's generated action framing into strategy
 and client recommendations — often with material errors.
 
-#### 13.17.1 Mandatory call pattern
-
-Every Analyse loop:
+**13.17.1 Mandatory call pattern.** Every Analyse loop:
 
 1. Call `get_actions(scope=overview)` against the same window the
    loop is analysing.
@@ -3292,9 +3650,8 @@ Every Analyse loop:
 Skip only if no prompts in the loop's window have matured
 (§12.7) — in which case the loop itself is usually premature.
 
-#### 13.17.2 Critical-filter step (data vs interpretation)
-
-For every recommendation returned by `get_actions`, record three things
+**13.17.2 Critical-filter step (data vs interpretation).** For every
+recommendation returned by `get_actions`, record three things
 separately in the findings file:
 
 1. **The signal** — the named URL, the named domain, the
@@ -3330,9 +3687,8 @@ affiliate case), the reframed version replaces Peec's original.
 - **PR outreach to affiliate-driven "vergleich"/"best-of" domains
   classified EDITORIAL/COMPARISON** — handled by 13.17.4 below.
 
-#### 13.17.3 Legitimacy check — fallback chain
-
-Business-model verification is part of the critical filter for any
+**13.17.3 Legitimacy check — fallback chain.** Business-model
+verification is part of the critical filter for any
 `EDITORIAL`/`COMPARISON`/`LISTICLE` target in the shortlist. Run
 the chain in order:
 
@@ -3355,8 +3711,7 @@ tool returned an error — that's a tool blocker masquerading as a
 finding, and it silently reduces the shortlist based on agent tool
 access rather than target quality.
 
-#### 13.17.4 EDITORIAL/COMPARISON default — assume affiliate-driven
-
+**13.17.4 EDITORIAL/COMPARISON default — assume affiliate-driven.**
 Peec's `EDITORIAL`/`COMPARISON` classification for comparison and
 listicle domains in commercial verticals is unreliable. Peec
 classifies by surface-level markers (article structure,
@@ -3471,6 +3826,33 @@ no longer produce material action for the next Strategy iteration.
   attractive because the sum stays below 100%, so it doesn't trip
   any obvious plausibility check — the rule has to be a hard
   "never".
+
+  *Worked anti-example (composition shape, not just language).*
+  Building a competitive bar chart for a brand family. Pulled own
+  brand 19% and sister brand 22% from `get_brand_report`. Computed
+  41% in head, drew a third bar labelled "Group: 41%". The chart
+  composition itself is the failure shape — any "combined" /
+  "group" / "family" bar drawn by arithmetic addition triggers this
+  rule. The rule fires on the *bar*, not just on the language.
+  Correct shape: list each brand as its own row, no combined bar.
+  If the stakeholder needs a group figure, run a single Peec query
+  with `brand_id IN (…)` (or a manual chat-ID union) and label the
+  result as a single combined-brand query, not as a sum.
+- **Trend or time-series visualisation across a window in which the
+  tracked prompt set changed.** Day-over-day line charts of
+  visibility, SoV, position, sentiment, retrieval share, etc. assume
+  a stable prompt cohort: the metric's denominator (chats in scope)
+  is governed by the tracked prompt set, and any `create_prompt`,
+  prompt-text `update_prompt`, or `delete_prompt` inside the window
+  changes that denominator mid-flight. The chart then visualises a
+  measurement-shift artefact, not a real movement. Same logic as
+  the rate-summing rule applied to the time axis — rates with a
+  changing denominator across time can't be plotted as a continuous
+  trend. Either truncate the chart to the longest sub-window where
+  the prompt set was stable, or drop the trend visualisation and
+  use snapshot metrics only. See §13.6 (prompt-set-stability check)
+  and §13.7 (stable-cohort gate). Cross-loop deltas inherit the
+  same constraint.
 - **Contrasting AI search with Google when any Google-family engine
   is on the tracked roster.** AI Mode, AI Overview, and Gemini are
   part of what's being measured. Any "AI search, not Google"
@@ -3505,6 +3887,19 @@ no longer produce material action for the next Strategy iteration.
   discoverability score; the branded cohort is acknowledged as
   "measured separately, reported on sentiment and source authority
   in the branded appendix" (§3.1 Phase B rule).
+- **Reporting a no-filter `get_brand_report` blend as a competitive
+  headline.** The no-filter `get_brand_report` blend mixes branded
+  and non-branded prompts. For competitive comparison, this silently
+  inflates the own brand relative to every tracked competitor — every
+  competitor is measured on the same set of branded prompts about
+  the own brand, where they score ~0% by construction (the prompt is
+  about the own brand, not them). The blended figure is therefore
+  not a clean roster comparison and must never be the headline of a
+  competitive slide. Always filter to non-branded only for roster
+  comparisons. This is the §14.2 sibling of the rate-summing rule —
+  both apply to aggregating across distinct measurement instruments
+  with structural asymmetries between the own brand and competitors.
+  See §3.1 for the worked example.
 - **Internal methodology vocabulary in any stakeholder-facing
   surface.** Off-limits as terms of art: "rig", "instrument",
   "dimension" (as the skill's five axes), "Phase A / Phase B",
@@ -3601,6 +3996,118 @@ no longer produce material action for the next Strategy iteration.
   tracking-infrastructure content, and it generalises beyond Peec:
   it applies to any analytics engagement where the author does both
   the instrumentation and the reporting.
+- **Every named content piece references its URL as a clickable
+  hyperlink on the same slide.** Whenever a slide names a specific
+  page — own URL, competitor URL, gap URL, listicle, comparison
+  site, Reddit thread, Wikipedia entry, authoritative source — the
+  page's URL must appear on that same slide as a clickable
+  hyperlink. Not just in the findings file, not just spelled out as
+  body copy without a hyperlink. The canonical pattern is a short,
+  visually distinct line placed near the named page (e.g. *"→
+  leafly.com/news/growing/the-best-cannabis-seed-companies"* in the
+  deck's accent colour, underlined, with `run.hyperlink.address`
+  set on the URL run). This turns the deck from a presentation
+  artefact into a working artefact: the stakeholder can click
+  through to verify any claim, and outreach / content owners can
+  act on the slide directly without re-deriving the URL. Use ASCII
+  arrow markers (`→ `) rather than the unicode link emoji (🔗) —
+  the emoji renders as a tofu box in the soffice → PDF QA pass
+  (see `pptx-extras` Hyperlink markers).
+- **Group / family / portfolio shown as one row per brand, never as
+  a summed bar.** When a competitive chart needs to display a
+  group, family, or portfolio of own brands alongside competitors,
+  list each owned brand as its own row. Do not draw a single
+  "combined" / "group" / "family" bar from arithmetic addition of
+  the per-brand percentages — that violates §14.2 (rate-summing
+  hard rule) and the failure shape is the bar itself. If the
+  stakeholder needs a single group figure, query Peec with
+  `brand_id IN (…)` (or do a manual chat-ID union) and label the
+  result as a single combined-brand query, not as a sum. A footnote
+  on the chart noting *"per-brand rates cannot be summed: a single
+  chat may mention more than one"* is the right place to surface
+  the constraint to the stakeholder.
+- **Every gap-list slide carries a host-classification.** On any
+  "where the brand is missing" / "editorial gaps" slide, every
+  named target must be classified as one of: (a) third-party
+  editorial (independent publisher, trade pub, community site); (b)
+  competitor-owned multi-brand listicle (ranks rivals — outreach
+  feasibility depends on competitor's editorial policy); (c) other
+  (UGC, reference, encyclopaedic). Targets in (a) get plain
+  outreach framing. Targets in (b) carry an explicit
+  *"competitor-owned"* label so the stakeholder can see the
+  conflict was not missed. Targets that don't fit (a) or (b) — most
+  obviously, competitor homepages, category pages, and product
+  pages — should not appear on this slide at all (see §13.9 host
+  classification rule). Filtering happens at analysis time; the
+  slide should not be the place where the user discovers the
+  filter wasn't applied.
+- **Time-series captions name the prompt-set stability window.**
+  For any time-series chart in a stakeholder deck, the caption
+  states the window over which the tracked prompt set was unchanged
+  ("stable cohort: 14 days, no prompt-set changes"). If the prompt
+  set changed inside the window, the chart does not appear in the
+  deck at all (see §14.2 trend-with-changing-cohort rule); use a
+  snapshot metric instead. The caption is not a rhetorical
+  caveat — it's the assertion that the chart represents real
+  movement rather than an instrument shift.
+- **Editorial pitch targets are browser-verified before deck
+  inclusion.** Tool-surfaced URL gap targets are signals, not
+  actions; promotion to a deck action item requires browser
+  verification of all of: (a) brand X is genuinely absent from the
+  page (cases (a)/(b)/(c) of the §13.9 brand-detection
+  verification disambiguated), (b) the page is open-access — drop
+  paywalled sources or frame as visible-snippet targets only,
+  (c) the page URL is the right one for the brand's commercial
+  positioning (right tier on a Legal 500 / Chambers / similar
+  tiered listing), (d) the page editorial quality justifies a
+  pitch (vs an AI-generated SEO farm). The cost of one browser
+  verification per candidate URL is much lower than the cost of
+  presenting a wrong target to a stakeholder. Verification
+  belongs **upstream of deck-content drafting**, not downstream of
+  stakeholder pushback.
+- **No internal artifact references on stakeholder slides.** The
+  audience-separation rule (§3.5) applies at the artefact-identifier
+  level, not just at the methodology-vocabulary level. Provenance
+  discipline (§3.2) and provenance display are different things — the
+  audit trail belongs in the working findings artefact, not on the
+  stakeholder deck. Methodology slides, footers, and captions must
+  not carry Peec project IDs, internal findings file paths, prompt /
+  brand / tag IDs, session IDs, or workspace paths. Use stakeholder-
+  register language: "Source: daily tracking of N questions across M
+  engines, P-day window", never "Source data: Peec AI project
+  or_486c…161; queries reproducible from findings-2026-05-04.md".
+  Internal artifact identifiers on stakeholder slides are register
+  violations regardless of how relevant they feel to the analyst.
+- **Terminology consistency across the full deck.** Pick one
+  preferred term for each of the 4–6 key concepts the deck depends
+  on and use it everywhere. Common drift surfaces: AI engines vs AI
+  tools vs AI assistants vs LLMs; branded vs non-branded vs "by
+  name" vs category-level; expertise pages vs sub-expertise pages
+  vs practice-area pages; specific deal numbers vs deal volume vs
+  deal counts. Each individual term may be defensible in isolation,
+  but mixed across slides it reads as inattention to a stakeholder
+  audience. The decision on which term to use is less important
+  than using one consistently. Run a grep-based terminology-
+  consistency check on every deck before delivery (see §15.3
+  pre-Phase-B gate).
+- **Cover slides land one message.** Pick the single most important
+  framing — competitive standing OR opportunity OR baseline OR
+  trajectory — and commit. Multi-stat hero compositions belong on
+  body slides, where the audience has accumulated enough context to
+  absorb the dual angle. The §14.8 combined-cover pattern is for
+  internal headline slides, not for the literal cover slide.
+  Practical heuristic for picking the cover message:
+    - **Trajectory-goal projects** (showing movement over time):
+      lead with the trajectory or the change.
+    - **Benchmark-goal projects** (showing where we stand today):
+      lead with competitive standing, OR the absolute level — but
+      not both.
+    - **Strategy-update projects** (mid-engagement, showing
+      direction): lead with the strategic claim, not the metric.
+  A cover's job is to make the audience want to turn to slide 2.
+  It's a hook, not a summary. Hooks land cleaner with one message;
+  summaries can carry multiple. When in doubt, pick one and trust
+  the body of the deck to carry the nuance.
 
 ### 14.4 Post-delivery feedback
 
@@ -3787,6 +4294,19 @@ strictly stronger when both halves hold up. Reserve single-angle
 covers for cases where the second angle actively weakens the first
 or doesn't pass scrutiny on its own.
 
+**Where this pattern applies — body slides, not the literal cover.**
+The "combined cover" name in this section refers to *internal
+combined-headline slides* in the deck's narrative arc, not the
+literal first slide the audience opens to. The combined-headline
+composition needs the audience to be already engaged enough to absorb
+two messages on one frame — divider lines, "one part / other part"
+logic, contrastive typography. The literal cover slide doesn't have
+that audience attention yet (it's the first 2-3 seconds), and the
+default §14.3 cover-single-message rule applies there: pick one
+framing and trust the body to carry nuance. If a deck's narrative
+opens with a combined-headline slide, that slide is slide 2 (or
+later), not slide 1.
+
 ### 14.9 Stakeholder-deck attribution — procedural, not personal
 
 Agency language in stakeholder output carries strategic weight.
@@ -3830,7 +4350,7 @@ agent's help.
 2. **Active SKU count** in the mapped category.
 3. **Published brand position or editorial commitment** on the
    client's site or public channels.
-4. **External search data** (GSC for the brand's own site; Semrush,
+4. **External search data** (GSC for the brand's own site; SEMrush,
    Ahrefs, or equivalent for competitive volume).
 5. **Industry report or analyst coverage** that names the category
    as material.
@@ -4287,6 +4807,85 @@ practice into a visible artefact the user can inspect and challenge.
 - [ ] Branded and non-branded are reported separately in every
       headline slide (§3.1, §9.7)
 - [ ] No tautological findings (§13.3) are used as lead lines
+- [ ] No visibility, SoV, retrieval-share, citation-share, or any
+      chat-share metric is computed by adding per-brand percentages.
+      Any "group" / "family" / "combined" figure was produced by a
+      single Peec query with `brand_id IN (…)` (or by manual chat-ID
+      set union) — and is labelled as such with the composition
+      method named in the caption. No "combined" / "group" bar
+      drawn by arithmetic addition appears on any chart (§14.2,
+      §14.3 group-as-rows rule)
+- [ ] Every named page or content piece on every slide has its URL
+      as a clickable hyperlink on the same slide (§14.3 every-named-
+      piece-clickable-URL rule). Hyperlink markers use ASCII arrows
+      (`→ `), not the unicode link emoji
+- [ ] No time-series chart appears in a window during which the
+      tracked prompt set changed (`create_prompt`, prompt-text
+      `update_prompt`, or `delete_prompt` operations). For any
+      surviving time-series chart, the caption names the prompt-set
+      stability window (§14.2 trend-with-changing-cohort, §14.3
+      time-series caption rule, §13.7 stable-cohort gate)
+- [ ] For every named gap URL on any slide, the URL's host has been
+      classified against the tracked brand roster. Competitor
+      homepages, category pages, and product pages have been
+      excluded from editorial-gap slides. Competitor-owned
+      multi-brand listicles that appear are explicitly flagged as
+      competitor-owned in the slide content (§13.9, §14.3 gap-list
+      classification rule)
+- [ ] Every named factual claim on every slide (especially
+      comparison claims of the form "X includes Y, Z doesn't") has
+      been verified in this session or in the most recent loop's
+      findings. Claims older than the most recent loop are flagged
+      for re-verification before inclusion or removed from the slide
+      (§13.6 carry-forward claim re-verification)
+- [ ] The cover slide carries a single message; multi-stat hero
+      compositions sit on body slides only. The §14.8 combined-
+      headline pattern is not used on the literal cover slide
+      (§14.3 cover-single-message rule)
+- [ ] **Editorial pitch targets are browser-verified.** Every
+      editorial pitch target named on any slide has been opened in
+      a browser and verified to satisfy all of: (a) the own brand
+      is genuinely absent from the page (cases (a)/(b)/(c) of the
+      §13.9 brand-detection verification have been disambiguated);
+      (b) the page is open-access — paywalled sources are dropped
+      or framed as visible-snippet targets only; (c) the page URL
+      is the right one for the brand's commercial positioning
+      (e.g. mid-market vs upper mid-market — the listicle that
+      ranks the wrong tier is not a pitch target); (d) the page's
+      editorial quality justifies a pitch (vs an AI-generated SEO
+      farm). Tool-surfaced action candidates from URL gap reports
+      are signals, not actions; promotion to action requires
+      browser verification.
+- [ ] **No internal artifact references on stakeholder slides.**
+      Stakeholder methodology slides, footers, and captions must
+      not carry: Peec project IDs (`or_…`), internal findings file
+      paths (`findings-YYYY-MM-DD.md`), prompt IDs (`pr_…`), brand
+      IDs (`kw_…`), tag IDs (`tg_…`), session IDs, workspace paths,
+      or any other internal artifact identifier. Provenance for
+      audit purposes belongs in the working findings artefact, not
+      on the deck. Methodology slides describe the data and method
+      in stakeholder-register language ("Source: daily tracking of
+      N questions across M engines, P-day window"), not in
+      internal-tooling language. The §3.2 provenance discipline
+      governs the findings file; the stakeholder methodology slide
+      describes the methodology, not the audit trail (§14.3
+      audience-separation rule).
+- [ ] **Terminology consistency check across the full deck.**
+      Identify the 4–6 key concept terms the deck depends on
+      (engines / AI tools / AI assistants; branded / non-branded /
+      "by name" / category-level; expertise pages / sub-expertise
+      / practice-area pages; specific deal numbers / deal volume /
+      deal counts; etc.) and grep the build script for each
+      variant. Pick one preferred term per concept and replace
+      every alternate. The decision on which term to use is less
+      important than using one consistently — terminology drift
+      across slides reads as inattention to the stakeholder
+      audience even when each individual choice is defensible
+      (§14.3 register-consistency rule). Ship a small terminology-
+      check helper alongside the build script when feasible:
+      a `{key concept: preferred term, forbidden alternates}`
+      map with grep-and-report output, run as the last
+      pre-render check.
 
 ---
 
