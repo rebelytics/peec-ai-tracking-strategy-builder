@@ -252,8 +252,7 @@ no longer produce material action for the next Strategy iteration.
   through to verify any claim, and outreach / content owners can
   act on the slide directly without re-deriving the URL. Use ASCII
   arrow markers (`→ `) rather than the unicode link emoji (🔗) —
-  the emoji renders as a tofu box in the soffice → PDF QA pass
-  (see `pptx-extras` Hyperlink markers).
+  the emoji renders as a tofu box in a LibreOffice → PDF QA pass.
 - **Group / family / portfolio shown as one row per brand, never as
   a summed bar.** When a competitive chart needs to display a
   group, family, or portfolio of own brands alongside competitors,
@@ -901,8 +900,8 @@ matters.
 
 See also: in-environment constraints around PPTX rendering engines,
 chart rendering parity across viewers, and cover-slide composition
-rules — these live in the `pptx` / `pptx-extras` skills and are
-subagent concerns, not parent-agent concerns. The parent agent's
+rules — these belong to whatever presentation tooling the subagent
+runs, and are subagent concerns, not parent-agent concerns. The parent agent's
 job is the translation; the subagent's job is the render.
 
 ---
