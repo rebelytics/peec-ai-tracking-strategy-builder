@@ -15,13 +15,14 @@ Two deliverables come out the other end: the configured Peec project itself, and
 
 ## What this repo contains
 
-- `SKILL.md` — the methodology.
+- `SKILL.md` — the core: mental model, cross-cutting and core principles, workflow overview, and a section map saying when to load each reference file.
+- `references/` — the phase playbooks, loaded on demand: intake, strategy, pattern library, write, analyse, Phase B stakeholder deliverable, quality gates, and data persistence. Section numbering is global across the file set.
 - `CONTRIBUTING.md` — how to propose changes.
 - `LICENSE` — CC BY 4.0.
 
 ## Install
 
-Install the skill into your MCP-capable agent's skills directory, following the client-specific path. The [`peec-ai-mcp`](https://github.com/rebelytics/peec-ai-mcp) companion skill's README covers client-specific install paths (Claude Code, Cowork, Cursor, VS Code, Codex, n8n, etc.). This skill delegates all tool-level concerns to that companion, so installing both together is strongly recommended.
+Install the whole skill directory — `SKILL.md` and `references/` must travel together, since the core loads the reference files on demand — into your MCP-capable agent's skills directory, following the client-specific path. The [`peec-ai-mcp`](https://github.com/rebelytics/peec-ai-mcp) companion skill's README covers client-specific install paths (Claude Code, Cowork, Cursor, VS Code, Codex, n8n, etc.). This skill delegates all tool-level concerns to that companion, so installing both together is strongly recommended.
 
 Restart your client and the skill description will trigger on strategy-build queries ("build our Peec project", "what should we track in Peec", "our Peec project needs rationalising", "set up AI visibility tracking for <brand>", "produce a stakeholder presentation for our Peec strategy", etc.).
 
