@@ -41,7 +41,8 @@ Thanks for helping this methodology evolve. It's a living workflow — every str
 - When adding a new pattern to the pattern library, follow the existing format: Symptom → Diagnosis → Action. Don't skip the diagnosis step; it's what turns a pattern into a teachable lesson.
 - Prescriptive recommendations in the Strategy sub-phase of Phase A follow the three-line structure: **Recommended** / **Reasoning** / **Override this if**. Keep that shape — it's what makes the output usable by agents that can't reason well about menus.
 - Flag anything plan-dependent or tool-dependent explicitly.
-- Date-stamp behavioural claims about Peec itself (`"as of April 2026…"`), since Peec iterates frequently.
+- Phrase behavioural claims about Peec itself as verified-at-last-check facts with a re-verification instruction ("at last verification the MCP returned X — confirm against `tools/list` on connection"), since Peec iterates frequently and an undated present-tense claim goes silently wrong.
+- Platform-agnostic methodology belongs in the core skill (`ai-visibility-tracking-strategy-builder`), not here; if a proposed rule would survive having "Peec" removed, open it on the core's repository.
 
 ## Code of conduct
 

@@ -1,113 +1,55 @@
-# Phase A — Strategy (§9–§10)
+# Phase A — Strategy — Peec implementation (§9–§10)
 
-Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn / [rebelytics.com](https://www.rebelytics.com)). Section numbers are global across `SKILL.md` and `references/` — the section map in `SKILL.md` says where each § lives.
+Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn / [rebelytics.com](https://www.rebelytics.com)). This file holds the Peec-specific part of §9–§10; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family — the section map in `SKILL.md` says where each § lives.
 
-**Load trigger:** Read before drafting or revising any strategy recommendation, and again before the strategy sign-off. §10 applies to existing projects only.
+**Load trigger:** Read together with the core `references/phase-a-strategy.md` before drafting or revising any strategy recommendation for a Peec project, and again before the strategy sign-off. §10 applies to existing projects only.
 
 **Contents:**
 
-- 9.1 Prompt volume split (load-bearing recommendation)
-  - 9.1.1 Search-volume axis (orthogonal to the funnel split)
-- 9.2 Country and market scope
-- 9.3 Brand roster
-  - Own-brand configuration
-  - Brand classification step (mandatory, before proposing any roster)
-  - Competitor configuration
-- 9.4 Tag taxonomy
-  - Taxonomy hygiene check (existing projects only)
-- 9.5 Topic structure
+- 9 Phase A — Strategy (gate and block format: core)
+- 9.1 Prompt volume split — core
+  - 9.1.1 Search-volume axis — Peec implementation (`list_prompts.volume`)
+- 9.2 Country and market scope — Peec implementation (`country_code`)
+- 9.3 Brand roster — Peec implementation
+  - Own-brand fields (`domains` / `aliases` / `regex`)
+  - Competitor fields and the `[Sister]` prefix rule
+- 9.4 Tag taxonomy — Peec implementation (hygiene check via `list_tags`)
+- 9.5 Topic structure — Peec implementation (topic operations, text immutability)
 - 9.6 Model coverage (plan-tier aware)
   - Branch A: Plan permits engine choice (4+ active engines available)
   - Branch B: Plan caps active engines (3 or fewer)
 - 9.6.1 Prompt-credit detection (known MCP gap)
-- 9.7 Reporting KPI split (branded vs non-branded)
-- 9.8 Strategy sign-off
+- 9.7 Reporting KPI split — Peec implementation (the tag set, report filters)
+- 9.8 Strategy sign-off — core
+- 9.9 Prompt authoring — core
+- 10 Prompt disposition framework — Peec action column
 
 ---
 
 ## 9. Phase A — Strategy
 
-**Hard gate:** Strategy cannot begin until the Intake summary block
-(§8.4) has been written and contains non-empty entries — or explicit
-"skipped because …" rationales — for each of: Ring 1 tools used, Ring 2
-steps completed (first loop only), Ring 3 automated inventory + user
-ask, and identified gaps. If any row is absent rather than explicitly
-skipped, return to §8 Intake. See §3.8 for why this gate exists.
+The hard gate (Intake summary block, §8.4), the goal, and the
+Recommended / Reasoning / Override block format are defined in the core
+§9. Every recommendation for a Peec project uses that format; the
+sections below only add what Peec's fields, plan tiers and MCP tools
+change.
 
-Goal: convert the intake into a concrete, prescriptive strategy
-recommendation. The user accepts or calls out an override. No menus,
-no "which would you like" questions.
+### 9.1 Prompt volume split
 
-Every recommendation block follows the same structure:
+Core §9.1 — the funnel split, the damped revenue-share weighting
+(§9.1.2), the breadth heuristic (§9.1.3) and the total-size rule. Nothing
+Peec-specific, except that the "very small budget" override applies to
+TRIAL-tier projects and any plan with ≤50 prompt slots (see §9.6.1 for
+how to find out).
 
-> **Recommended:** *[concrete numbers, categories, or choices]*
->
-> **Reasoning:** *[1–2 sentences tied to intake data]*
->
-> **Override this if:**
-> - *[condition 1]* → *[what to change]*
-> - *[condition 2]* → *[what to change]*
-> - *[etc.]*
+#### 9.1.1 Search-volume axis — Peec implementation
 
-### 9.1 Prompt volume split (load-bearing recommendation)
-
-> **Recommended:** 50% discovery, 30% consideration, 15% comparison,
-> 5% branded reputation monitoring. Tag each prompt with `funnel:<tier>`.
->
-> **Reasoning:** Discovery dominates where the brand needs to attract
-> new customers (the overwhelming majority of Peec use cases).
-> Comparison slots capture head-to-head competitor queries where AI
-> answers frequently rank. Branded reputation monitoring measures how AI
-> describes the brand when asked about it by name — useful, but should
-> never dominate because branded prompts score near 100% visibility by
-> construction (§4.10, §3.1).
->
-> **Override this if:**
-> - B2B or long sales cycle → flip to 25/45/20/10 (more consideration
->   weight).
-> - Strong existing brand equity and branded prompts already at
->   visibility=1.0 → drop branded reputation monitoring to 0%, reclaim
->   slots for discovery.
-> - Regulated vertical (cannabis, pharma, gambling, finance) → add a
->   `topic:safety` band at ~10%, taken off discovery; expect
->   legal-caution framing in AI responses (see §11 pattern library,
->   regulatory-aware sentiment).
-> - TRIAL plan or ≤50 prompt slots → drop comparison entirely; focus
->   on discovery + branded reputation monitoring only.
-
-#### 9.1.1 Search-volume axis (orthogonal to the funnel split)
-
-The funnel split above is the **primary** axis. Peec also
-exposes a **second orthogonal axis** via `list_prompts.volume` — the
-search-volume ordinal that was previously only visible in the UI is
-now pullable through MCP (see `peec-ai-mcp` §7.42). Treat volume as a
-distinct prompt-portfolio axis alongside funnel stage; a prompt
-portfolio that's balanced on funnel but dominated by "very low" volume
-prompts is materially under-weighted for commercial coverage.
-
-> **Recommended volume mix (within each funnel tier):**
-> - **Head (high / very high):** 20–30% — tests whether the brand
->   surfaces on the queries that drive the category.
-> - **Mid (medium):** 40–50% — the workhorse prompts that carry most of
->   the signal.
-> - **Long tail (low / very low):** 20–30% — captures niche / specific
->   intent and keeps long-tail coverage legible.
->
-> **Reasoning:** A portfolio that's all head prompts is great for
-> visibility headlines but hides long-tail gaps; all long-tail misses
-> the queries that actually drive category traffic. The orthogonal
-> distribution means each funnel tier itself has head/mid/tail
-> coverage, not just the roster as a whole.
->
-> **Override this if:**
-> - Pre-existing TRIAL-tier project with <30 prompts → drop long tail
->   entirely; focus on head + mid so the small budget doesn't fragment.
-> - Very niche vertical where head-volume queries don't exist (e.g. a
->   specific B2B SaaS category) → the "head" tier may be empty by
->   nature; concentrate on mid + long tail and note the constraint.
-> - Project whose current portfolio is already ≥80% "very low" volume →
->   Loop 2 should prioritise adding head/mid prompts over adding more
->   long-tail. The `volume` signal makes this measurable.
+Peec exposes the second orthogonal axis of core §9.1.1 via
+`list_prompts.volume` — the search-volume ordinal that was previously
+only visible in the UI is now pullable through MCP (see `peec-ai-mcp`
+§7.42). The recommended head/mid/tail mix and its overrides are in the
+core; the TRIAL-tier override there ("existing project with <30 prompts
+on a capped budget") is the usual case for a pre-existing TRIAL project.
 
 **Handling the volume ordinal in code.** `list_prompts.volume` returns
 string ordinals (`"very low"` / `"low"` / `"medium"` / `"high"` /
@@ -122,37 +64,31 @@ prompts" is a very different story from a flat "50% discovery
 visibility" headline. Volume segmentation turns a muddled average into
 a commercially-meaningful diagnosis.
 
-### 9.2 Country and market scope
+### 9.2 Country and market scope — Peec implementation
 
-> **Recommended:** Start with the top 2 markets by revenue or traffic.
-> Add `country_code` on every prompt from day 0.
->
-> **Reasoning:** Multi-market is cheap to add now, painful to backfill
-> — every prompt without `country_code` is a prompt that won't be
-> filterable by market later. See `peec-ai-mcp` §7.15 — `country_code`
-> is required on create; there is no `language` field (language is
-> inferred from text).
->
-> **Override this if:**
-> - Single-market brand → use one country_code everywhere, but set
->   it explicitly.
-> - Multi-TLD with shared content across markets → track flagship
->   market first, add others once flagship visibility data exists.
-> - The brand operates in a country outside Peec's 92-country enum
->   → flag and discuss fallback with the user before proceeding
->   (see `peec-ai-mcp` §7.15).
+The market recommendation (top 2 markets, market attribute on every
+prompt from day 0) and the cross-market divergence check are in the core
+§9.2. In Peec the market attribute is `country_code`:
 
-### 9.3 Brand roster
+- Add `country_code` on every prompt from day 0. See `peec-ai-mcp` §7.15
+  — `country_code` is required on create; there is no `language` field
+  (language is inferred from text).
+- Single-market brand → one `country_code` everywhere, but set it
+  explicitly.
+- The brand operates in a country outside Peec's 92-country enum → flag
+  and discuss fallback with the user before proceeding (see
+  `peec-ai-mcp` §7.15). This is the "country the tool cannot represent"
+  override of the core.
+- Topic-per-market is wrong — that's `country_code`'s job (core §9.5).
 
-> **Recommended:** Own brand with full owned-domain list + 5 tracked
-> competitors, manually curated.
->
-> **Reasoning:** Peec's auto-selected competitors skew to reference
-> and UGC sites rather than commercial rivals (§4.6). A manually
-> curated shortlist of 5 genuine competitors produces cleaner
-> share-of-voice data than a sprawling 15+ list.
+### 9.3 Brand roster — Peec implementation
 
-#### Own-brand configuration
+The roster size, the own-brand identity concept, the mandatory brand
+classification step and the competitor selection criteria are in the
+core §9.3. Peec's auto-selected competitors are the case in point for
+the core's "tool-suggested lists skew to reference and UGC sites" (§4.6).
+
+#### Own-brand fields
 
 > **Recommended:** For the own brand, set:
 > - `domains` = all TLDs the brand operates (not just primary).
@@ -167,172 +103,60 @@ a commercially-meaningful diagnosis.
 > classified as `CORPORATE` in domain reports, not `OWN`. That silently
 > misreads cross-TLD mentions as competitive. Missing aliases are the
 > single most common cause of understated own-brand mentions in Peec.
->
-> **Override this if:**
-> - Brand genuinely operates only one TLD → single domain is correct.
-> - Brand has overlapping TLDs with different companies (rare, but
->   possible in regulated trademarks) → omit conflicted TLDs and note
->   in the persisted intake state.
 
-#### Brand classification step (mandatory, before proposing any roster)
+The overrides (single-TLD brand; conflicted TLDs) are in the core.
 
-Before proposing a brand as a competitor, classify it against the
-three-category shape from §4.6:
+#### Competitor fields and the `[Sister]` prefix rule
 
-1. **Commercial competitor** — distinct business, fighting for the same
-   customer's wallet. Add to the roster with `is_own=false`; classify
-   in the persisted intake state as `direct_competitor`,
-   `aspirational`, or `sister_brand`.
-2. **Assortment brand** — a brand the own retailer stocks and
-   merchandises (typically appears as a product line at
-   `/collections/{brand}`, a Shopify collection, or a brand category
-   page on the own site). Detect via a sitemap scan (§8.3.2) for
-   `/collections/`, `/brands/`, `/manufacturer/`, or equivalent path
-   patterns. Retailing the brand doesn't make it a competitor —
-   conflating the two inflates competitor counts and corrupts gap
-   analysis. Surface these separately in the Strategy output so
-   stakeholders see the distinction.
-3. **Marketplace / generic noise** — Amazon, Google Shopping, generic
-   directory pages. Not a competitor; not stocked; skip entirely from
-   the roster.
+Commercial competitors go on the roster with `is_own=false`. For each of
+the 5 commercial competitors (not assortment brands — core §9.3
+classification step), set `name`, `domains`, `aliases`. Skip `regex`
+unless needed.
 
-**Assortment-brand handling rules:**
+Brand is part of a corporate group with sibling brands in the same
+vertical → prefix sister-brand `name` with `[Sister]` in Peec so reports
+self-document (Peec has no native `is_sister` flag). **Important:** when
+applying this prefix, the `aliases` array must be populated in the same
+update call with the original brand name, or brand detection breaks
+silently — see §11.2 for the full pattern and safe wave ordering.
 
-- **Don't add as a roster competitor by default.** Assortment brands
-  inflate SoV denominators and can turn the own retailer's own
-  assortment into a headline "competitor threat".
-- **Tag, not track** (preferred). Tag prompts that mention the
-  assortment brand with a `brand:<name>` tag so topic/tag-filtered
-  reports can surface per-assortment-brand signal without polluting
-  the competitor SoV.
-- **Topic sub-structure** (alternative, for assortment-heavy sites).
-  If the retailer merchandises by brand as a primary navigation axis
-  (e.g. a sneaker store with per-brand landing pages dominating the
-  URL structure), it may make sense to use those brand names as
-  topics or sub-topics (§9.5). Prefer the tag approach unless the
-  brand roster is very small and assortment coverage dominates the
-  commercial structure.
-- **User decides.** Surface the classification choice explicitly in
-  §8.3.3b (scoping widget) rather than assuming.
+Assortment brands are tagged, not tracked (`brand:<name>` — core §9.3);
+they do not get a roster row. A competitor brand name appearing as a
+topic is a signal the roster isn't classified correctly — competitors
+belong on the roster with `is_own=false`, not as topics (core §9.5).
 
-#### Competitor configuration
+### 9.4 Tag taxonomy — Peec implementation
 
-> **Recommended:** For each of the 5 commercial competitors (not
-> assortment brands — see the classification step above), set `name`,
-> `domains`, `aliases`. Skip `regex` unless needed. Classify each
-> competitor in the persisted intake state as `direct_competitor`,
-> `aspirational`, or `sister_brand`.
->
-> **Reasoning:** Sister-brand misclassification is a portfolio-brand
-> failure mode (§11 pattern library). A sibling brand in AI responses
-> takes share from the own brand on paper, but the group still wins —
-> reports that don't distinguish sister brands from rivals will
-> systematically overstate competitive pressure.
->
-> **Override this if:**
-> - Brand is part of a corporate group with sibling brands in the
->   same vertical → prefix sister-brand `name` with `[Sister]` in
->   Peec so reports self-document (Peec has no native `is_sister`
->   flag). **Important:** when applying this prefix, the `aliases`
->   array must be populated in the same update call with the
->   original brand name, or brand detection breaks silently — see
->   §11.2 for the full pattern and safe wave ordering.
-> - More than 5 genuine commercial competitors exist and the plan
->   allows → add up to 10, but treat the extras as secondary in
->   SoV calculations.
-> - Fewer than 3 real commercial rivals exist (niche / category
->   leader) → populate with 3 aspirational competitors (market leaders
->   the brand wants to benchmark against).
+The cardinality rule, the three-axis 15–25 tag recommendation, the
+namespace rule and the tag-sprawl discipline are in the core §9.4. Peec
+is the **"both at once"** tool shape: a prompt carries exactly one
+`topic_id` (the single-valued container) and any number of `tag_ids`
+(the multi-valued field). A prompt's fields are `text`, `topic_id`,
+`tag_ids` and `country_code` — there is no single-keyword back-reference
+field, so the demand term a prompt was derived from is recorded in the
+intake state (§7), not on the prompt. Where a sub-topic level is used
+(§4.8) it subdivides its parent topic only, never a second axis.
 
-### 9.4 Tag taxonomy
+**Taxonomy hygiene check (existing projects only).** Run the core's
+duplication check by pulling the project's tag list with `list_tags`,
+then computing the prompt-set overlap for each pair from `list_prompts`
+(intersection of prompt IDs divided by the smaller set); flag >60%
+overlap and propose which tag to retire.
 
-> **Recommended:** Three axes, 15–25 tags total:
-> - **Intent:** `intent:commercial`, `intent:comparison`,
->   `intent:transactional`, `intent:informational`, `intent:branded`
-> - **Funnel:** `funnel:awareness`, `funnel:consideration`,
->   `funnel:decision`, `funnel:branded`
-> - **Category:** one tag per business category from the topic
->   structure (§9.5), prefixed `cat:`
->
-> Every prompt carries at least one tag from each dimension.
->
-> **Reasoning:** 2–3 dimensional taxonomies stay consistent under
-> growth. More dimensions produce orphaned tags and inconsistent
-> application. Never parallel two dimensions that measure the same
-> thing (e.g. don't maintain both `transactional` and
-> `funnel:decision` — pick one).
->
-> **Override this if:**
-> - Brand already has a taxonomy in use (brand guidelines, GSC query
->   groupings) → mirror it rather than invent a parallel one.
-> - Regulated vertical → add a `regulatory` dimension with tags like
->   `regulatory:restricted` so sentiment reports can filter these out
->   of headline numbers (see §11 pattern library).
-> - Portfolio brand with sister-brand overlap → add a `relationship`
->   dimension with `relationship:sister` vs `relationship:competitor`
->   so SoV reports can distinguish.
-> - Tag count would exceed 25 with all planned dimensions → drop the
->   weakest dimension (usually intent or comparison) and fold it into
->   a wider tag.
+### 9.5 Topic structure — Peec implementation
 
-#### Taxonomy hygiene check (existing projects only)
+Peec's container is the **topic**. The 5–8 recommendation, the
+"categories, not brand names" rule, the derivation steps and the
+identical-across-markets rule are in the core §9.5.
 
-For existing projects, before proposing the taxonomy, run a duplication
-check:
+Peec operations behind the core's dispositions:
 
-1. For each pair of tags in `list_tags`, compute the prompt-set
-   overlap (intersection of their prompt IDs, divided by the smaller
-   set).
-2. Flag any pair with >60% overlap as a duplication candidate.
-3. For each flagged pair, propose which tag to retire and which to
-   keep.
-
-Common overlaps: `transactional` ↔ `funnel:decision`,
-`informational` ↔ `funnel:awareness`, `branded` ↔ `funnel:branded`.
-
-### 9.5 Topic structure
-
-> **Recommended:** 5–8 topics for single-market projects. Each topic
-> maps to a business category. Topic names should be clean (no
-> prefixes duplicating tag dimensions — `cat:seeds` is a tag, "Seeds"
-> is a topic). **Topics name categories the own brand sells into —
-> never commercial competitor names** (§4.8).
->
-> **Reasoning:** More than 10 topics usually signals either multiple
-> markets mashed into one project (topic-per-market is wrong — that's
-> `country_code`'s job) or topics acting as tags. Every tag that names
-> a prompt cluster larger than ~3 prompts should be considered a
-> candidate topic, not just a tag (§4.8). A competitor brand name as a
-> topic is a strong signal the brand roster (§9.3) isn't classified
-> correctly — competitors belong on the roster with `is_own=false`,
-> not as topics.
->
-> **Override this if:**
-> - Multi-category marketplace with genuinely distinct verticals → up
->   to 12 topics is acceptable if each has 8+ prompts.
-> - Single-vertical specialist → as few as 3–4 topics is fine.
-> - Existing project has overlapping topics (e.g. "Growing" and
->   "Growing Equipment") → propose a merge with `update_prompt.topic_id`
->   to move prompts, then `delete_topic` the redundant one.
-> - Assortment-heavy retailer where brand names dominate site structure
->   → assortment brand names may legitimately serve as sub-topics or
->   (preferred) as `brand:<name>` tags; see §9.3's
->   "Brand classification step" for the decision criteria.
-
-**Prompt disposition and assortment brands.** When reviewing an
-existing project's prompt set against the new topic structure, watch
-for prompts whose topic is a brand name. Two sub-cases:
-
-- **Topic is a commercial competitor name** → move the prompt to the
-  relevant category topic and add a `competitor:<name>` tag. This
-  preserves the data while routing the signal to the right axis.
-- **Topic is an assortment brand name** → apply §9.3's classification
-  rules. If the retailer merchandises by brand at primary-navigation
-  depth, the topic may be legitimate; otherwise move the prompt to a
-  category topic and tag with `brand:<name>`.
-
-Either move is a `update_prompt.topic_id` call (not a text edit — see
-`peec-ai-mcp` §7.13 for why text is immutable).
+- **Merging overlapping topics** → move prompts with
+  `update_prompt.topic_id`, then `delete_topic` the redundant one.
+- **Prompt whose topic is a brand name** (competitor or assortment
+  brand — core §9.5 "Prompt disposition and brand-name containers") →
+  the move is an `update_prompt.topic_id` call (not a text edit — see
+  `peec-ai-mcp` §7.13 for why text is immutable).
 
 ### 9.6 Model coverage (plan-tier aware)
 
@@ -397,132 +221,62 @@ field (or equivalent) so subsequent loops don't re-ask. Surface the
 prompt-credit constraint alongside the engine-count detection so the
 user answers all plan-related questions in a single pass.
 
-### 9.7 Reporting KPI split (branded vs non-branded)
+### 9.7 Reporting KPI split — Peec implementation
 
-> **Recommended:** Report branded-prompt metrics and non-branded-prompt
-> metrics as **separate KPIs**. Never average them into one headline
-> visibility number.
->
-> **Reasoning:** Branded prompts score near 100% visibility by
-> construction (the prompt mentions the brand). Rolling them into
-> overall SoV inflates headline metrics and obscures the real
-> "unprompted discovery" signal (§4.10, §3.1).
->
-> **Override this if:**
-> - Brand has no branded prompts tracked → skip this split (it's a
->   non-issue). Still recommended to add 2–3 branded prompts for
->   brand-awareness tracking, but keep them tagged `funnel:branded`
->   and filter them out of discovery reports.
-
-**Strict-with-disclosure rule.** Separate reporting of branded vs
-non-branded is required (§3.1). If a combined metric is ever produced —
-e.g. because a stakeholder insists on a single headline — it must be
-accompanied by an explicit "this is an anti-pattern" disclosure and a
-breakdown showing both cohorts underneath. Never silently produce a
-blended figure. The disclosure isn't a formality; it's the mechanism
-that prevents the blended number from becoming the canonical one.
+The separate-KPI rule, the strict-with-disclosure rule, the three-case
+brand-mention split, the two-tags-or-three decision, placement and ratio
+are all in the core §9.7.
 
 **Implementation — Peec has no native branded/non-branded concept.** The
-user-defined tag pattern is the standard. Set two tags at prompt
-creation:
+user-defined tag pattern is the standard. Set the brand-mention tag at
+prompt creation, choosing on **who is named in the prompt text**:
 
-- `branded` — prompts that contain the brand's own name
-- `non-branded` — every other prompt
+- `branded` — the own brand is named
+- `other-brand` — a different brand is named and the own brand is not:
+  a commercial competitor, or an assortment brand the retailer stocks
+  (§4.6 / §9.3)
+- `non-branded` — no brand is named
 
-Both tags must be applied at creation time (a prompt with no
-branded/non-branded tag is a configuration bug — it can't be filtered
-into either cohort). Tags are the cleanest split because they survive
-topic restructuring (§9.5), they cross topic boundaries (a branded
-prompt can live under any topic), and they flow through `get_brand_report
-filters=[{tag_id:...}]` natively. Document the tag IDs in the intake
-state (§7) so downstream loops can compute the split without re-deriving.
-
-**Codify this as a value-add.** Whenever a Peec project is built or
-rationalised, the branded/non-branded tag pair is part of the strategy
-deliverable, not an implementation detail. The tag naming, the
-convention, and the rationale appear in the sign-off artefact (§9.8) —
-it's a piece of methodology the strategy adds on top of what Peec ships
-natively.
+Exactly one of the three is applied at creation time. Tags flow through
+`get_brand_report filters=[{tag_id:...}]` natively, which is why the
+split lives in tags rather than topics. Document the three tag IDs in
+the intake state (§7) so downstream loops (§13.3) can compute the split
+without re-deriving.
 
 ### 9.8 Strategy sign-off
 
-Before the Write sub-phase (§12) runs, the user must sign off on the
-Strategy output. The **sign-off is required; the format is not.**
+Core §9.8 in full. For a Peec project the example document title reads
+"[Brand] Peec AI Tracking Strategy — Loop N", the implementation plan
+lists what will be written to Peec and in what order (§12), and the
+engine set from §9.6 above is recorded as an accepted or overridden
+recommendation like the others.
 
-The sign-off artefact can take whatever form fits the engagement:
+### 9.9 Prompt authoring
 
-- A full markdown strategy document (one example — see the schema below
-  for a concrete structure).
-- A concise structured message in the chat confirming each §9.1–9.7
-  recommendation.
-- An interactive list the user ticks through.
-- A handoff doc in environments without persistence.
-
-What the sign-off must capture, regardless of format:
-
-- Loop number and date.
-- Each §9.1–9.7 recommendation as accepted or overridden, with the
-  override reasoning where applicable.
-- Prompt disposition decisions (existing projects) — see §10.
-- The implementation plan preview (what the Write sub-phase will do).
-- The measurement plan (earliest sensible next Analyse per §12.7).
-- Any content-strategy findings surfaced during intake that live
-  outside Peec.
-
-Example full-strategy-document structure (one of several valid formats):
-
-```
-# [Brand] Peec AI Tracking Strategy — Loop N
-Date | Project | Build or Refine | Prepared by
-
-1. Executive summary (1 paragraph)
-2. Intake & data sources (what was consulted, what was provided,
-   what gaps remain)
-3. Strategic recommendations (one block per §9.1–9.7 with Recommended /
-   Reasoning / Override blocks)
-4. Prompt disposition — existing projects only (§10 six-bucket table)
-5. Implementation plan (Write preview: what will be written to Peec,
-   in what order)
-6. Measurement plan (what to watch, earliest re-analysis date, baseline)
-7. Content strategy findings (non-Peec actions surfaced during intake)
-8. Appendix: intake state snapshot, data sources table, override decisions log
-```
-
-If the full-document format is chosen, it's **presentation quality** —
-formatted for a stakeholder to read without further explanation. Use
-tables, headings, and numbered blocks. Avoid agent-internal jargon.
-
-If a shorter format is chosen, the sign-off still needs to be a concrete
-artefact (not implicit) — something the user can point at and say "yes,
-this is what I signed off on". The Analyse sub-phase (§13) will refer
-back to it.
+Core §9.9 in full. Peec-specific constraint to carry into any authoring
+brief: prompt `text` is immutable after creation (`peec-ai-mcp` §7.13), so
+the educational-opener ban and the brand-mention tag must be applied at
+authoring time — a prompt that needs its wording fixed later is a
+paired delete + create (§10).
 
 ---
 
-## 10. Prompt disposition framework (existing projects only)
+## 10. Prompt disposition framework — Peec action column
 
-When the project has existing prompts, every one of them is classified
-into one of six buckets:
+The six buckets and their criteria are in the core §10. The Peec
+operations behind the Action column:
 
-| Bucket | Criteria | Action |
-|---|---|---|
-| **Keep as-is** | Strong commercial intent, non-zero visibility, aligned with a strategy category | No write required |
-| **Keep with retagging** | Good prompt but needs updated tags or topic | `update_prompt(tag_ids, topic_id)` — full replacement (see `peec-ai-mcp` §7.14) |
-| **Keep as gap-to-close** | Legitimate commercial prompt, currently 0% visibility, strategy flags as a performance gap to hunt | Retag with `gap-to-close`; feed into content strategy recommendations |
-| **Keep as diagnostic** | Zero visibility expected (structural gap, regulatory barrier, low-priority category), but worth measuring for trend | Retag with `diagnostic`; filter out of headline reports |
-| **Reframe** | Right intent, wrong phrasing (wrong language, wrong product framing). `update_prompt` can't change `text` (see `peec-ai-mcp` §7.13), so this is `delete_prompt` + `create_prompt` paired. Loses historical data. | Paired delete + create. Only reframe when the improved framing is worth the data loss. |
-| **Remove** | Educational (produces Wikipedia, not retailer mentions), duplicative, or zero-signal without diagnostic value | `delete_prompt` |
+| Bucket | Peec action |
+|---|---|
+| **Keep as-is** | No write required |
+| **Keep with retagging** | `update_prompt(tag_ids, topic_id)` — full replacement, not a merge (see `peec-ai-mcp` §7.14) |
+| **Keep as gap-to-close** | Retag with `gap-to-close` (the bare tag string used on existing Peec projects; new projects may use the core's `signal:gap-to-close`); feed into content strategy recommendations |
+| **Keep as diagnostic** | Retag with `diagnostic` (likewise `signal:diagnostic` on new projects); filter out of headline reports |
+| **Reframe** | `update_prompt` can't change `text` (see `peec-ai-mcp` §7.13), so this is `delete_prompt` + `create_prompt` paired. Loses historical data. |
+| **Remove** | `delete_prompt` |
 
-The **gap-to-close** bucket captures the common case of a legitimate
-commercial prompt that currently scores zero — "where can I buy X in
-Germany" for a brand that ought to appear there but doesn't. Keeping
-it (vs deleting as noise) preserves the metric that tracks the gap
-closing. This is different from `diagnostic`, which flags prompts we
-expect to stay at zero.
-
-The disposition table is part of the Strategy sign-off (§9.8) — concrete
-and line-by-line when existing prompts are involved. Subsequent Analyse
-loops (§13) will check the gap-to-close bucket for movement and may
-reclassify prompts between buckets as evidence accumulates.
+Whichever tag strings a project uses, use one convention per project
+and record it in the intake state (§7) so Analyse (§13) filters on the
+right tag IDs.
 
 ---

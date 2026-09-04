@@ -1,6 +1,8 @@
 # peec-ai-tracking-strategy-builder
 
-Open-source **methodology skill** for building or refining a [Peec AI](https://peec.ai) tracking strategy end-to-end. Load it into any MCP-capable AI agent (Claude, Cursor, Codex, n8n, etc.) to run a layered data intake, produce a prescriptive strategy recommendation, and write the result directly to the Peec project via the Peec MCP.
+Open-source **Peec AI companion** to the platform-agnostic [`ai-visibility-tracking-strategy-builder`](https://github.com/rebelytics/ai-visibility-tracking-strategy-builder) skill, for building or refining a [Peec AI](https://peec.ai) tracking strategy end-to-end. Load both into any MCP-capable AI agent (Claude, Cursor, Codex, n8n, etc.) to run a layered data intake, produce a prescriptive strategy recommendation, and write the result directly to the Peec project via the Peec MCP.
+
+**Two skills, one workflow.** The core skill holds the methodology — intake rings, allocation methods, the cardinality rule for topics versus tags, the three-way brand-mention split, the prompt disposition framework, the pattern library, the stakeholder-presentation rules and the quality gates. This skill holds everything Peec-specific: MCP reads and known gaps, brand/topic/tag field mechanics, plan-tier engine gating, write waves and verification, the Analyse recipes over Peec's reports, and Peec-only patterns. Section numbers are shared across both, so every "§N — Peec implementation" part here extends the core's §N.
 
 ## What this skill does
 
@@ -15,18 +17,20 @@ Two deliverables come out the other end: the configured Peec project itself, and
 
 ## What this repo contains
 
-- `SKILL.md` — the core: mental model, cross-cutting and core principles, workflow overview, and a section map saying when to load each reference file.
-- `references/` — the phase playbooks, loaded on demand: intake, strategy, pattern library, write, analyse, Phase B stakeholder deliverable, quality gates, and data persistence. Section numbering is global across the file set.
+- `SKILL.md` — the Peec notes on the core's principles, the relationship to the core and to `peec-ai-mcp`, and a section map saying when to load each reference file.
+- `references/` — the Peec parts of each phase, loaded on demand: intake (MCP reads, known gaps, seed-and-harvest), strategy (fields, plan-tier branches, tag set, action column), pattern library (Peec parts and §11.6), write (in full), analyse (in full), Phase B (the report calls behind the core rules), quality gates (the call or field behind each core gate), and data persistence (Peec fields). Section numbering is global across the skill family.
 - `CONTRIBUTING.md` — how to propose changes.
 - `LICENSE` — CC BY 4.0.
 
 ## Install
 
-Install the whole skill directory — `SKILL.md` and `references/` must travel together, since the core loads the reference files on demand — into your MCP-capable agent's skills directory, following the client-specific path. The [`peec-ai-mcp`](https://github.com/rebelytics/peec-ai-mcp) companion skill's README covers client-specific install paths (Claude Code, Cowork, Cursor, VS Code, Codex, n8n, etc.). This skill delegates all tool-level concerns to that companion, so installing both together is strongly recommended.
+Install **three** skill directories, each with its `SKILL.md` and `references/` travelling together: the core [`ai-visibility-tracking-strategy-builder`](https://github.com/rebelytics/ai-visibility-tracking-strategy-builder) (required — this skill does not run without it), this skill, and the [`peec-ai-mcp`](https://github.com/rebelytics/peec-ai-mcp) tool companion (strongly recommended). Follow the client-specific path in your MCP-capable agent's skills directory; the `peec-ai-mcp` README covers client-specific install paths (Claude Code, Cowork, Cursor, VS Code, Codex, n8n, etc.).
 
 Restart your client and the skill description will trigger on strategy-build queries ("build our Peec project", "what should we track in Peec", "our Peec project needs rationalising", "set up AI visibility tracking for <brand>", "produce a stakeholder presentation for our Peec strategy", etc.).
 
-## What the skill teaches the agent
+## What the two skills teach the agent
+
+The methodology below lives in the core skill; the Peec mechanics behind each item live here.
 
 - **Layered intake.** Always exhaust automated sources before asking the user anything. Ring 1 scans connected MCPs, loaded skills, and conversation context. Ring 2 runs the baseline path — Peec seed-and-harvest (Day-0 seed + Day-1 harvest, per Peec's 24-hour cadence), competitor FAQ scraping, AI self-report, YouTube autocomplete, sitemap-based URL-structure baselining, and user's domain knowledge. Ring 3 is a batched ask for enrichment (SEO tool exports, GSC queries, analytics, content crawl, brand context) — required on the first loop, optional thereafter.
 - **Prescriptive Phase A strategy with overrides.** Rather than producing a menu of options, the skill outputs concrete recommendations anchored in the intake, with explicit callouts for departure cases. An agent (or human) can accept the recommendation or flip it via the override block without having to reason from scratch.
@@ -50,7 +54,8 @@ Found a new pattern the library should cover? Ran a strategy build where a presc
 
 - Original author: [Eoghan Henn](https://www.rebelytics.com) / [LinkedIn](https://www.linkedin.com/in/eoghanhenn)
 - Built during the [Peec MCP Challenge](https://peec.ai/mcp-challenge), April 2026
-- Companion skill: [`peec-ai-mcp`](https://github.com/rebelytics/peec-ai-mcp)
+- Core skill: [`ai-visibility-tracking-strategy-builder`](https://github.com/rebelytics/ai-visibility-tracking-strategy-builder)
+- Tool companion: [`peec-ai-mcp`](https://github.com/rebelytics/peec-ai-mcp)
 - Not affiliated with [Peec AI](https://peec.ai). They make the product; this skill is an independent methodology guide.
 
 ## License

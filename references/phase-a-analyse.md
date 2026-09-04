@@ -191,8 +191,8 @@ legitimate findings include:
 **Computation recipe — how to derive the non-branded cohort when Peec
 doesn't filter it natively.** In order of cleanness:
 
-1. **Tag filter (preferred).** If the project carries `branded` /
-   `non-branded` tags (§9.7), call `get_brand_report` with
+1. **Tag filter (preferred).** If the project carries the brand-mention
+   tags (§9.7), call `get_brand_report` with
    `filters=[{tag_id: <non-branded-tag-id>}]`. Cleanest and most
    resilient — survives topic restructuring.
 2. **Topic filter (fallback).** If all branded prompts live under a
@@ -206,7 +206,21 @@ doesn't filter it natively.** In order of cleanness:
    Uses only the total and branded-cohort subtotals from two separate
    report calls. Works even when tags and topics aren't organised for
    filtering, and is the fallback when the first two approaches aren't
-   available.
+   available. **Note the limit:** subtraction can only ever produce two
+   cohorts. Where the project runs the three-cohort split (§9.7), the
+   `other-brand` cohort has to come from its own tag-filtered call — a
+   subtraction silently folds it into whichever side it was taken from.
+
+**Where the project tracks `other-brand` (§4.10, §9.7), report three
+lines, not two.** Pull each cohort with its own tag filter and present
+them side by side. The middle line is the intermediary-specific question:
+*when a customer asks about a brand we stock, do we get named as a place
+to buy it?* Unlike `branded` it is not a near-tautology, and unlike
+`non-branded` it isn't cold discovery — so its number is interpretable on
+its own terms and is often the most actionable of the three. It never
+merges into the branded headline (§3.1's rule applies to it equally), and
+folding it into `non-branded` depresses that cohort's apparent difficulty
+by mixing in prompts that carry a retrieval anchor.
 
 **Cross-tool calibration (first Peec Analyse after an external-tool
 strategy).** When Loop 1 is the first Peec data following a strategy
@@ -231,7 +245,7 @@ out, returned generic "I can't help"). Handle them two ways:
 - **Report** the empty-response rate as a separate metric, so the user
   sees it.
 
-Regulated verticals (cannabis, pharma, gambling, adult) are especially prone
+Regulated verticals (pharma, gambling, alcohol, adult) are especially prone
 to engine refusals. This is a structural reality of the niche, not a
 detection problem. Distinguishing empty-response from brand-not-mentioned
 in the Analyse output prevents the visibility math from silently
@@ -641,8 +655,8 @@ tracked brand roster (`list_brands.domains`). Three sub-cases apply:
 The unfiltered gap list from `get_url_report` / `get_domain_report`
 is a data surface; the filtered list — competitor own-domains
 removed, multi-brand listicles flagged — is the actionable outreach
-surface. Conflating the two ("you want me to ask Linda Seeds to
-feature their direct competitor on their homepage?") surfaces
+surface. Conflating the two ("you want me to ask a direct competitor to
+feature us on their homepage?") surfaces
 unactionable recommendations and erodes credibility even though the
 underlying retrieval data is correct. The question that actually
 needs answering is *"is it realistic for us to appear here?"*, and
@@ -724,8 +738,8 @@ Run fanout mining as a standing Analyse activity:
    sharpest case; they are not the only case.
 2. **Adjacent-intent discovery.** Fanout sub-queries reveal the
    adjacent-intent space around a tracked prompt. A prompt for "best
-   law firms for fraud recovery" that fans out to "UK firms
-   specialising in asset tracing" is telling you where to place the
+   commercial insurance brokers for fleets" that fans out to "brokers
+   specialising in haulage fleet cover" is telling you where to place the
    next prompt slot.
 3. **Platform-mention mining (ranking-dominated verticals).** Grep the
    fanout `query_text` for the vertical's candidate ranking bodies,
@@ -759,8 +773,8 @@ Run fanout mining as a standing Analyse activity:
 
 ### 13.11 ChatGPT parametric behaviour in regulated verticals is a strategic pattern
 
-In regulated verticals (cannabis, pharma, legal services in specific
-jurisdictions, some financial products), ChatGPT often answers entirely
+In regulated verticals (pharma, gambling, professional services in
+specific jurisdictions, some financial products), ChatGPT often answers entirely
 from parametric memory — no retrieval, no sources. Fanout returns
 empty; the `sources` array on the chat is empty or near-empty. This is
 a structural feature of the vertical, not a per-project anomaly.
@@ -785,9 +799,9 @@ the content-strategy implications that follow.
 
 **The broader pattern — where else this applies.** Regulated verticals
 are the sharpest case of high-salience parametric fallback but not
-the only one. Data across multiple projects from early 2026 shows
+the only one. Data across multiple projects at last verification shows
 the same parametric signature on branded queries where the brand is
-strongly recognised, on well-known certification / standards queries,
+strongly recognised, on well-known standards and accreditation queries,
 and on commercial categories where the model has strong priors from
 the pre-training corpus. See §11.13 for the enumerated conditions,
 §13.10 for the diagnostic procedure, and `peec-ai-mcp` §7.5 for the
@@ -1067,7 +1081,7 @@ listicle domains in commercial verticals is unreliable. Peec
 classifies by surface-level markers (article structure,
 editorial-looking content) and cannot see the affiliate monetisation
 layer underneath. In commercial verticals with high affiliate base
-rates — ecommerce, regulated categories (cannabis, pharma, nutra,
+rates — ecommerce, regulated categories (pharma, nutra,
 gambling, adult, weapons), SaaS review, VPN, hosting, finance —
 assume an `EDITORIAL`/`COMPARISON` target is affiliate-driven until a
 browser check confirms otherwise.
@@ -1105,8 +1119,8 @@ so later loops inherit the updated prior.
 Peec's `list_prompts.volume` ordinals (`very high`, `high`,
 `medium`, `low`, `very low`) are a useful signal in high-variance
 commercial verticals (SaaS, consumer electronics, travel,
-high-variance ecommerce). In **regulated verticals** — cannabis,
-pharma, nutra, gambling, weapons, adult, and any vertical where
+high-variance ecommerce). In **regulated verticals** — pharma,
+nutra, gambling, weapons, adult, and any vertical where
 search volume is suppressed by content restrictions — the
 distribution collapses to the low end (`low` / `very low`) across
 most commercial topics. Volume becomes a near-constant and does not

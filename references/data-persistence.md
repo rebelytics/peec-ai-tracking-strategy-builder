@@ -1,197 +1,78 @@
-# Data persistence (§7)
+# Data persistence — Peec implementation (§7)
 
-Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn / [rebelytics.com](https://www.rebelytics.com)). Section numbers are global across `SKILL.md` and `references/` — the section map in `SKILL.md` says where each § lives.
+Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn / [rebelytics.com](https://www.rebelytics.com)). This file holds the Peec-specific part of §7; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family.
 
-**Load trigger:** Read when initialising or resuming the project workspace, and before writing any loop artefact.
+**Load trigger:** Read immediately after the core skill's §7 file, when initialising or resuming a Peec project workspace and before writing any loop artefact.
 
 ---
 
-## 7. Data persistence
+## §7 — Peec implementation
 
-User-provided data is saved between runs so the user provides context
-once, not once per session.
+The core §7 schema is complete except for the `platform:` block. For a
+Peec project that block holds the identifiers a loop needs to resume
+against the same project without re-discovery. Persist them once, at
+the end of Intake, and read them back at the start of every loop.
 
-**What, not how.** This skill requires *that* intake state persists; it
-doesn't require a specific file format or directory layout. The
-`intake.yaml` schema below is one concrete example. Other equally valid
-approaches: handoff docs pasted session-to-session, memory systems,
-journal-style markdown notes, or whatever fits the user's environment.
-In environments without persistent storage (web chat interfaces), a
-detailed handoff doc at the end of each session is required so the next
-session can resume without re-entering data.
-
-The principle: every loop should be able to read the previous loop's
-intake state, strategy sign-off, and findings without asking the user
-to re-provide them. The mechanism is agent/user choice.
-
-### 7.1 Where data is saved (illustrative layout)
-
-```
-<workspace>/<brand-folder>/peec-strategy/
-  intake.yaml                — current intake state (canonical, read first)
-  intake-history/             — dated snapshots for diffing
-    intake-YYYY-MM-DD.yaml
-  strategy-YYYY-MM-DD.md     — strategy sign-off artefact for loop N (optional)
-  findings-YYYY-MM-DD.md      — Analyse output for loop N (optional)
-  verification-YYYY-MM-DD.md  — post-write reconciliation log
-```
-
-This is one concrete example, not a mandated structure. If no brand-specific
-folder exists yet, ask the user which folder name to use (defaulting to a
-slugified form of the brand name) and create the structure. If a
-brand-specific directory already exists from other work, nest
-`peec-strategy/` inside it rather than creating a parallel tree.
-
-### 7.2 What `intake.yaml` holds (illustrative schema)
-
-The schema below uses a fictional brand — Northwind Coffee Co., a specialty
-coffee retailer with European markets and sister brands in tea and brewing
-equipment — purely as an illustrative example. Adapt the field set to the
-brand being tracked.
+### 7.2 — Peec implementation: the `platform:` block
 
 ```yaml
-brand:
-  name: Northwind Coffee Co.
-  primary_domain: northwindcoffee.com
-  owned_domains:
-    - northwindcoffee.com
-    - northwindcoffee.de
-    - northwindcoffee.co.uk
-    # ... all TLDs
-  aliases:
-    - Northwind Coffee
-    - Northwind Roasters
-  regex: null
-  regulatory_context: null   # populate if the brand operates in a regulated
-                             # vertical (pharma, financial products, etc.);
-                             # null for non-regulated brands like this one
-
-markets:
-  - country_code: DE
-    priority: 1
-    revenue_share_pct: 42
-  - country_code: UK
-    priority: 2
-    revenue_share_pct: 28
-  - country_code: NL
-    priority: 3
-    revenue_share_pct: 15
-
-competitors_known:
-  - name: Contoso Coffee
-    domains: [contoso-coffee.com]
-    aliases: []
-    relationship: direct_competitor
-  - name: Northwind Tea
-    domains: [northwindtea.com]
-    relationship: sister_brand   # ← persisted, routes differently in reports
-
-sister_brands:
-  - Northwind Tea
-  - Northwind Brewing Equipment
-
-existing_taxonomy:
-  source: supplied_csv
-  provided_on: 2026-04-20
-  tag_dimensions:
-    - intent
-    - funnel
-    - category
-
-customer_voice_samples:
-  provided: false
-  last_asked: 2026-04-20
-
-data_sources_connected:
-  - peec_mcp
-  - brand_context_skill: northwind-coffee-context   # generic name — use
-                                                    # whatever the loaded
-                                                    # brand-context skill is
-                                                    # called in the agent's
-                                                    # environment
-  - web_search_web_fetch
-  # optional enrichments marked absent if not available:
-  - gsc: not_connected
-  - seo_tool: not_connected
-  - analytics: not_connected
-
-# Per-source disposition — mandatory table, one row per Ring 3 data category.
-# Each row records whether that data was received, explicitly declined in
-# writing, or is still outstanding. No row may be "deferred to Loop 2" as a
-# self-granted skip — only the user can decline.
-ring3_data_disposition:
-  - source: xml_sitemap
-    status: received       # received | declined_by_user | outstanding
-    provided_on: 2026-04-20
-  - source: gsc_queries
-    status: declined_by_user
-    declined_reason: "No GSC access; will run on later loop after access set up"
-  - source: gsc_pages
-    status: outstanding
-  - source: keyword_tool_export
-    status: outstanding
-  - source: revenue_by_landing_page
-    status: outstanding
-  - source: margin_by_product_line
-    status: outstanding
-  - source: crawl_export
-    status: not_applicable  # use when no crawl tool is available for this project
-  - source: customer_voice_samples
-    status: outstanding
-  - source: competitor_faq_urls
-    status: outstanding
-  - source: brand_positioning_doc
-    status: received
-    provided_on: 2026-04-20
-  - source: regulatory_notes
-    status: not_applicable  # non-regulated vertical
-
-last_refreshed: 2026-04-20
+platform:
+  name: peec
+  project_id: <id>                 # from list_projects; every read/write
+                                   # call is scoped to it
+  brand_mention_tags:              # Peec tag IDs carrying the §9.7 split;
+    branded: <tag_id>              # the §13.3 tag-filter recipe reads these
+    other_brand: <tag_id>          # omit if the project runs the two-cohort
+    non_branded: <tag_id>          # split (§4.10)
+  plan:
+    prompt_credits: <n>            # asked from the user (§9.6.1) — the MCP
+                                   # does not expose plan data and
+                                   # get_credit_balance does not exist
+                                   # (peec-ai-mcp §7.37)
+    engines_capped: true|false     # §9.6 — 3 or fewer active engines
+                                   # most likely means a gated plan
+  active_engines:                  # from list_models(project_id,
+    - <model_id>                   #   is_active=true) at last Intake;
+    - <model_id>                   # re-read at every Intake, not trusted
+                                   # across loops
+  own_brand_id: <brand_id>         # the is_own brand; update_brand target
+                                   # for alias/domain/regex fixes
 ```
 
-The schema is illustrative. Use whatever structure fits — the requirement
-is that future loops can read it without re-asking.
+Field notes:
 
-**The `ring3_data_disposition` table is not illustrative — it is
-mandatory.** Every Ring 3 data category must appear as a row with a
-disposition of `received`, `declined_by_user`, `outstanding`, or
-`not_applicable`. "Deferred to Loop 2" is **not a valid disposition**
-— if data isn't available for Loop 1 and the user hasn't declined in
-writing, the correct state is `outstanding` and Strategy cannot proceed
-until it becomes `received` or `declined_by_user` (see §3.8 / §3.9 /
-§8.4). This is the persistence-layer enforcement that closes the
-"planned deferral" skip shape (§3.8).
+- **`project_id`** — mandatory. Without it the next loop has to call
+  `list_projects` and ask the user which project is meant.
+- **`brand_mention_tags`** — mandatory once the §9.7 tags exist. These
+  IDs are what make the preferred §13.3 cohort recipe
+  (`get_brand_report` with `filters=[{tag_id: …}]`) callable without a
+  `list_tags` round-trip. Tag IDs are stable; tag *names* are not a
+  safe key because they can be renamed.
+- **`plan.prompt_credits`** — asked once, persisted so subsequent loops
+  don't re-ask (§9.6.1). Update only when the user reports a plan
+  change.
+- **`active_engines`** — the engine set is a plan constraint (§9.6
+  Branch B), so it is persisted as a *record of what was seen*, not a
+  cached truth. Re-read `list_models` at every Intake; a diff against
+  the persisted list is itself a finding (plan change, new engine
+  enabled).
+- **`country_code`** — the core schema's `markets[].country` maps
+  directly onto Peec's per-prompt `country_code` field. Persist the
+  market list once in the core block; do not duplicate it here.
 
-### 7.3 Refresh logic
+### 7.1 — Peec implementation: folder name
 
-On each loop, the agent:
+The core layout's `tracking-strategy/` folder was historically named
+`peec-strategy/` in this skill. Existing workspaces keep whichever name
+they have; do not rename a folder that prior loops' hand-off docs point
+at.
 
-1. Reads the persisted intake state.
-2. Calculates age: `last_refreshed` vs today.
-3. If age > 90 days, prompts the user to confirm refresh of any field
-   that may have drifted (markets, competitors, revenue share).
-4. If age ≤ 90 days, surfaces the existing data to the user in the
-   next Strategy iteration without re-asking.
-5. Persists any new fields provided this session, saving a dated snapshot
-   before overwriting the canonical file.
+### 7.4 — Peec implementation: handoff-doc additions
 
-The user should never be asked for data that's already persisted unless
-the data is stale or the user explicitly wants to update it.
-
-### 7.4 Handoff-doc fallback for non-persistent environments
-
-In environments without persistent storage (web chat interfaces), the
-agent must produce a handoff doc at the end of each session that captures:
-
-- Current intake state (brand config, markets, competitors,
-  regulatory context).
-- Latest strategy sign-off summary.
-- Latest findings and what they imply for the next loop.
-- Earliest sensible re-analysis date (per §12.7).
-- Pending verification items.
-
-The next session starts by reading the handoff doc back in. This is less
-seamless than a persistent file, but preserves the core requirement:
-don't re-ask for data the user has already provided.
+In non-persistent environments the session-end handoff doc must carry
+the whole `platform:` block above verbatim — `project_id` and the three
+tag IDs in particular, because a session that starts without them
+cannot run the §13.3 tag-filter recipe and will silently fall back to
+arithmetic subtraction, which cannot produce the `other-brand` line.
 
 ---
