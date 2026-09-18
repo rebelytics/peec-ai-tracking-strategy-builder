@@ -19,6 +19,7 @@ Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan He
   - Branch A: Plan permits engine choice (4+ active engines available)
   - Branch B: Plan caps active engines (3 or fewer)
 - 9.6.1 Prompt-credit detection (known MCP gap)
+  - What a credit is, and the cadence gate
 - 9.7 Reporting KPI split — Peec implementation (the tag set, report filters)
 - 9.8 Strategy sign-off — core
 - 9.9 Prompt authoring — core
@@ -208,7 +209,57 @@ most likely caps model coverage.
 Plan detection has two axes: **engines** (detectable via MCP — §9.6
 above) and **prompt credits** (not detectable). `list_projects` does not
 return plan information. The `peec-ai-mcp` companion skill confirms that
-`get_credit_balance` does not exist (see `peec-ai-mcp` §7.37).
+`get_credit_balance` does not exist — see
+`peec-ai-mcp/references/gotchas.md` §7.11 "Write-operation consent,
+verification, and safe-experimentation patterns", restated in
+`peec-ai-mcp/references/tools-and-responses.md` §4 "Response format".
+
+#### What a credit is, and the cadence gate
+
+Before asking the user anything about credits, know the billing unit —
+otherwise the answer to "how many prompts does your plan allow?" cannot
+be turned into a prompt allocation:
+
+> **1 prompt × 1 model × 1 day = 1 credit.** Projects run **daily** by
+> default. Switching a project to **weekly** tracking cuts credit use to
+> roughly a third — but weekly cadence is available **only on Peec's
+> larger plan tiers**, not on every plan.
+
+Source: Peec's *Understanding credits* documentation,
+`https://docs.peec.ai/agencies/understanding_credits`. Plan-tier names
+and thresholds drift; re-read the page before quoting a specific tier,
+and never name a tier from memory.
+
+Three consequences for the strategy:
+
+1. **Cost scales on three multipliers, not one.** A plan allowance is
+   spent by prompts × engines × run-days. §9.6's engine recommendation
+   and the prompt allocation are therefore the *same* budget decision
+   viewed twice — recommending four engines triples the cost of every
+   prompt relative to one. State the multiplication when presenting
+   either.
+2. **Cadence is a lever the client may not have.** On a plan that does
+   not offer weekly tracking, "run fewer prompts" and "track fewer
+   engines" are the only levers, which changes the shape of the
+   recommendation. Confirm the plan before proposing a cadence change as
+   a cost saving.
+3. **Weekly cadence trades resolution for coverage.** A third of the
+   credits buys roughly three times the prompts or engines, at a seventh
+   of the observations per prompt. That favours broad coverage of a
+   stable landscape and penalises anything needing day-level movement
+   (campaign tracking, §14, or a volatile competitive set). Say which
+   trade the recommendation is making.
+
+**Proposal caution — do not write "daily or weekly as defaults".** A
+comparison or proposal that presents cadence as a free choice between two
+defaults is wrong on every plan that gates weekly, and it is wrong in the
+client's favour, which means it surfaces as a credibility problem at the
+worst moment. Any sentence about cadence in a client-facing document
+must carry the plan gate with it: *"daily by default; weekly (about a
+third of the credit use) on the larger plan tiers."* Verify against the
+credits documentation before the document goes out — cadence, the credit
+formula, and which tiers unlock what are the claims most likely to be
+stated loosely, because they are the ones stated from memory.
 
 The agent must always ask the user for the project's prompt allocation
 as part of the known-MCP-gaps block (§8.1). Frame the ask as: "Peec's

@@ -27,12 +27,20 @@ on every platform and need no Peec-specific step.
   before asking the user for market, plan credits, or other derivable
   fields. Specifically: `list_projects` returns `{id, name, status}`
   only — no country / market metadata and no plan data;
-  `get_credit_balance` does not exist (see `peec-ai-mcp` §7.37);
+  `get_credit_balance` does not exist (see
+  `peec-ai-mcp/references/gotchas.md` §7.11 "Write-operation consent,
+  verification, and safe-experimentation patterns");
   `list_models(is_active=true)` **is** available and gives the active
   engine count. The user ask for market and prompt credits is prefixed
   with "The Peec MCP doesn't expose this at the project level, so I
-  need to confirm with you:" and both plan questions are surfaced
-  together.
+  need to confirm with you:" and all three plan questions — prompt
+  credits, engine count, run cadence — are surfaced together.
+- **Core item "cost-driving platform facts are stated, not implied":**
+  any cadence or cost statement in the strategy or in a client-facing
+  document carries the credit formula (1 prompt × 1 model × 1 day = 1
+  credit) and names the plan gate on weekly cadence (§9.6.1). A
+  document that presents cadence as "daily or weekly" without the gate
+  fails this item.
 - **Core item "brand roster specifies owned domains, name variants
   and a detection pattern":** the roster specifies `domains`,
   `aliases`, and optional `regex` for own brand and every tracked

@@ -1,7 +1,7 @@
 ---
 name: peec-ai-tracking-strategy-builder
-description: 'Peec AI companion to the platform-agnostic `ai-visibility-tracking-strategy-builder` skill — build or refine a Peec AI tracking strategy as an iterative workflow (Intake → Strategy → Write → Analyse, plus an optional stakeholder presentation), with this skill holding everything Peec-specific: MCP reads and gaps, brand/topic/tag fields, plan-tier engine gating, write waves and verification, Analyse recipes over Peec reports, Peec-only patterns. Load whenever the user mentions Peec AI strategy, Peec setup, Peec onboarding, "what should we track in Peec", "build/improve our Peec project", Peec prompt rationalisation, Peec rebuild, or AI visibility strategy for a brand using Peec; also on Phase B / retrospective requests about an existing Peec strategy ("explain our Peec setup", "document our tracking strategy", "what are we tracking in Peec and why"). Requires the core skill `ai-visibility-tracking-strategy-builder` loaded alongside; companion to `peec-ai-mcp` (recommended; tool mechanics).'
-version: 3.0.0
+description: "Peec AI companion to the platform-agnostic `ai-visibility-tracking-strategy-builder` skill — build or refine a Peec AI tracking strategy as an iterative workflow (Intake → Strategy → Write → Analyse, plus an optional stakeholder presentation), with this skill holding everything Peec-specific: MCP reads and gaps, brand/topic/tag fields, plan-tier engine gating, write waves and verification, Analyse recipes over Peec reports. Load whenever the user mentions Peec setup, Peec onboarding, \"what should we track in Peec\", Peec prompt rationalisation, or Peec rebuild; also on Phase B / retrospective requests about an existing Peec strategy (\"explain our Peec setup\", \"document our tracking strategy\"). Requires the core skill `ai-visibility-tracking-strategy-builder` loaded alongside; companion to `peec-ai-mcp` (recommended; tool mechanics)."
+version: 3.1.0
 license: CC-BY-4.0
 origin: https://github.com/rebelytics/peec-ai-tracking-strategy-builder
 maintainer: Eoghan Henn / rebelytics (eoghan@rebelytics.com)
@@ -159,7 +159,17 @@ count from `list_models` with `is_active=true`) and route accordingly:
   quality and brand-detection hygiene question, not an engine
   selection one.
 
-§9.6 carries the branches; §9.6.1 the prompt-credit gap.
+**Run cadence is plan-gated too, and it is the other half of the cost
+question.** Peec bills in credits, where **1 prompt × 1 model × 1 day =
+1 credit**, and projects run **daily by default**. A weekly cadence costs
+roughly a third of the credits — but it is available only on Peec's
+larger plan tiers, not on every plan. So the two levers that decide what
+a project costs are the **prompt × engine count** (§9.6 above) and the
+**cadence**, and only the first is freely available on every plan. Never
+present cadence as a simple default choice without naming the plan gate;
+§9.6.1 carries the wording and the proposal caution.
+
+§9.6 carries the branches; §9.6.1 the prompt-credit and cadence gap.
 
 ### 4.11 Direct writes, no dry-run artifact
 

@@ -28,9 +28,16 @@ platform:
     prompt_credits: <n>            # asked from the user (§9.6.1) — the MCP
                                    # does not expose plan data and
                                    # get_credit_balance does not exist
-                                   # (peec-ai-mcp §7.37)
+                                   # (peec-ai-mcp/references/gotchas.md §7.11
+                                   #  "Write-operation consent, verification,
+                                   #  and safe-experimentation patterns")
     engines_capped: true|false     # §9.6 — 3 or fewer active engines
                                    # most likely means a gated plan
+    run_cadence: daily|weekly      # asked from the user (§9.6.1) — no MCP
+                                   # field exposes it. Daily is the
+                                   # default; weekly is gated to the
+                                   # larger plan tiers, so "weekly" also
+                                   # implies an ungated plan
   active_engines:                  # from list_models(project_id,
     - <model_id>                   #   is_active=true) at last Intake;
     - <model_id>                   # re-read at every Intake, not trusted
@@ -51,6 +58,11 @@ Field notes:
 - **`plan.prompt_credits`** — asked once, persisted so subsequent loops
   don't re-ask (§9.6.1). Update only when the user reports a plan
   change.
+- **`plan.run_cadence`** — asked in the same block as
+  `prompt_credits`, and persisted for the same reason. It belongs in the
+  state because credit spend is prompts × engines × run-days: without
+  the cadence, a prompt allowance cannot be converted into an allocation,
+  and any cost figure in a deliverable is a guess (§9.6.1).
 - **`active_engines`** — the engine set is a plan constraint (§9.6
   Branch B), so it is persisted as a *record of what was seen*, not a
   cached truth. Re-read `list_models` at every Intake; a diff against

@@ -37,6 +37,17 @@ Ring 2 or Ring 3 for that specific gap only (core §8).
 because Peec processes new prompts within 24 hours (see §12.7); quote
 that cadence when giving the disclosure.
 
+**Don't conflate the two "dailies".** The 24-hour figure above is how
+fast *this workflow* can loop. Peec's **run cadence** is a separate,
+billed thing: **1 prompt × 1 model × 1 day = 1 credit**, projects run
+daily by default, and a weekly cadence (roughly a third of the credit
+use) is available **only on Peec's larger plan tiers**. Whenever the
+pacing disclosure touches cost — and it should, because cadence and the
+prompt × engine count are the two levers a client conversation turns on
+— state the credit formula and name the plan gate rather than implying
+cadence is a free choice. §9.6.1 carries the formula, the trade-offs and
+the wording for client-facing documents.
+
 ### 8.1 — Peec implementation
 
 Core §8.1 says what Ring 1 must capture from the platform and how to
@@ -54,8 +65,9 @@ doesn't expose this" rather than "tell me":
 | Field | MCP tool to check | What it returns | Gap |
 |---|---|---|---|
 | **Project country / market** | `list_projects` | `{id, name, status}` only | No country, language, or market metadata at project level. Ask the user: "Peec's MCP doesn't expose project-level market data, so I need to confirm: which markets should this strategy prioritise?" |
-| **Plan tier / prompt credits** | `list_projects` | `{id, name, status}` only | No plan data. `get_credit_balance` does not exist (see `peec-ai-mcp` §7.37). Ask the user: "Peec's MCP doesn't expose plan credits. How many prompts does your plan allow?" Single precise question, not a multi-tier multiple choice. |
+| **Plan tier / prompt credits** | `list_projects` | `{id, name, status}` only | No plan data. `get_credit_balance` does not exist (see `peec-ai-mcp/references/gotchas.md` §7.11 "Write-operation consent, verification, and safe-experimentation patterns"). Ask the user: "Peec's MCP doesn't expose plan credits. How many prompts does your plan allow?" Single precise question, not a multi-tier multiple choice. |
 | **Active engine count (proxy for plan gating)** | `list_models(is_active=true)` | Active engine list | ✓ Available. 3 or fewer = likely plan-capped (§9.6). |
+| **Run cadence (daily vs weekly)** | — | Not exposed | No cadence field anywhere in the MCP surface. Cadence is a billing setting: daily by default, weekly (about a third of the credit use) only on the larger plan tiers (§9.6.1). Ask it in the same block as the other plan questions: "Peec's MCP doesn't expose your run cadence — is the project running daily, or weekly?" A "weekly" answer also tells you the plan tier is one of the larger ones. |
 
 When asking the user about a known MCP gap, always prefix with the
 reason: "The Peec MCP doesn't expose this at the project level, so I
