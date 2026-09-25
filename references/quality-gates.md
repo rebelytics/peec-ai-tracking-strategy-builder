@@ -164,5 +164,25 @@ on every platform and need no Peec-specific step.
   "unconfirmed import assumption" items of the core pre-flight do not
   apply; the §12.1 freshness check (`list_*` immediately before the
   write) takes their place.
+- **Core gate 12 "Realised composition":** rule and thresholds are the
+  core's; on Peec the realised mix is `list_prompts` grouped by
+  `country_code`, `topic_id` and the intent / brand-mention `tag_ids`
+  (§9.4, §9.7), run on the planned set before the write wave and on the
+  `list_*` reconciliation after it.
+- **Core gate 13 "Service grounding":** rule is the core's and needs no
+  Peec read; run it before the prompt wave, because `text` is immutable
+  after creation (`peec-ai-mcp` §7.13) and a prompt that fails it
+  afterwards is a `delete_prompt`, not an edit.
+- **Core gate 14 "Product detection":** rule and detectors are the
+  core's (§9.9); on Peec the product dimension lives in `tag_ids`
+  (§4.8, §9.4), so the assertion runs over the planned `create_prompts`
+  payload before the wave (every prompt's text fires its own product's
+  detector and no other) and over `list_prompts` after it (every
+  product tag on a prompt agrees with the detector on its `text`).
+- **Core gate 15 "Language validation":** rule is the core's; on Peec
+  it is a §12.1 pre-flight item and runs on the planned payload, never
+  on the live project, because a miss found after `create_prompts` is
+  an archive-or-delete plus a recreate and the archived prompts stay in
+  the project.
 
 ---

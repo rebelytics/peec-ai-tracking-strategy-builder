@@ -7,7 +7,8 @@ Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan He
 **Contents:**
 
 - 9 Phase A — Strategy (gate and block format: core)
-- 9.1 Prompt volume split — core
+- 9.1 Prompt volume split — core, plus the credit budget per direction
+  - 9.1.0 Direction first — Peec note (volume is conditioned on existing prompts)
   - 9.1.1 Search-volume axis — Peec implementation (`list_prompts.volume`)
 - 9.2 Country and market scope — Peec implementation (`country_code`)
 - 9.3 Brand roster — Peec implementation
@@ -37,11 +38,34 @@ change.
 
 ### 9.1 Prompt volume split
 
-Core §9.1 — the funnel split, the damped revenue-share weighting
-(§9.1.2), the breadth heuristic (§9.1.3) and the total-size rule. Nothing
-Peec-specific, except that the "very small budget" override applies to
-TRIAL-tier projects and any plan with ≤50 prompt slots (see §9.6.1 for
-how to find out).
+Core §9.1 — the direction step (§9.1.0: budget fixed, or budget being
+sized), the funnel split, the damped revenue-share weighting (§9.1.2),
+the breadth heuristic (§9.1.3), the fill-by-quota rule for cutting a
+pool to budget (§9.1.4) and the total-size rule. Nothing Peec-specific,
+except that the "very small budget" override applies to TRIAL-tier
+projects and any plan with ≤50 prompt slots (see §9.6.1 for how to find
+out), and that **the credit budget is computed from the direction the
+core's §9.1.0 settles**:
+
+- **Budget fixed** — the plan's credit allocation (asked in §9.6.1) is
+  the input. Prompt slots = allocated credits ÷ (active engines from
+  `list_models(is_active=true)` × run-days per period — 30 at daily
+  cadence, fewer at weekly). Allocate those slots per core §9.1 and
+  report the products left unmeasurable.
+- **Budget being sized** — the prompt count is the input: the
+  two-per-product floor plus demand-promoted depth, per market. Credits
+  to buy = that prompt count × active engines × run-days per period.
+  The number goes into the plan conversation, not the other way round;
+  the §12.1 pre-flight re-checks it as a total before the first write.
+
+#### 9.1.0 Direction first — Peec note
+
+The question and both branches are core §9.1.0. On Peec the sizing
+branch is the more common one to get wrong, because `list_prompts.volume`
+(§9.1.1) is computed for prompts that already exist: a product with no
+prompt has no volume band, and reading that absence as low demand is
+exactly the error the core rule guards against. Volume sets depth once a
+product has its floor; it never decides whether a product gets one.
 
 #### 9.1.1 Search-volume axis — Peec implementation
 
@@ -306,9 +330,11 @@ recommendation like the others.
 
 Core §9.9 in full. Peec-specific constraint to carry into any authoring
 brief: prompt `text` is immutable after creation (`peec-ai-mcp` §7.13), so
-the educational-opener ban and the brand-mention tag must be applied at
-authoring time — a prompt that needs its wording fixed later is a
-paired delete + create (§10).
+the educational-opener ban, the brand-mention tag and the per-language
+validation of core gate 15 must all be applied at authoring time — a
+prompt that needs its wording fixed later is a paired archive-or-delete
++ create (§10), and an archived prompt stays in the project. §12.1
+carries the pre-write check.
 
 ---
 

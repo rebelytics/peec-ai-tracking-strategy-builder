@@ -1,7 +1,7 @@
 ---
-name: peec-ai-tracking-strategy-builder
+name: "peec-ai-tracking-strategy-builder"
 description: "Peec AI companion to the platform-agnostic `ai-visibility-tracking-strategy-builder` skill — build or refine a Peec AI tracking strategy as an iterative workflow (Intake → Strategy → Write → Analyse, plus an optional stakeholder presentation), with this skill holding everything Peec-specific: MCP reads and gaps, brand/topic/tag fields, plan-tier engine gating, write waves and verification, Analyse recipes over Peec reports. Load whenever the user mentions Peec setup, Peec onboarding, \"what should we track in Peec\", Peec prompt rationalisation, or Peec rebuild; also on Phase B / retrospective requests about an existing Peec strategy (\"explain our Peec setup\", \"document our tracking strategy\"). Requires the core skill `ai-visibility-tracking-strategy-builder` loaded alongside; companion to `peec-ai-mcp` (recommended; tool mechanics)."
-version: 3.1.0
+version: 3.2.0
 license: CC-BY-4.0
 origin: https://github.com/rebelytics/peec-ai-tracking-strategy-builder
 maintainer: Eoghan Henn / rebelytics (eoghan@rebelytics.com)
@@ -219,9 +219,9 @@ failure shape as skipping an intake ring (core §3.8).
 |---|---|---|
 | `references/data-persistence.md` | §7 — Peec fields in the intake state | Immediately after core §7, when initialising or resuming the project workspace |
 | `references/phase-a-intake.md` | §8.1 Peec MCP reads and known gaps, §8.2 Step A Peec seed-and-harvest | After core `phase-a-intake.md` and before the first Peec MCP read of any Intake step |
-| `references/phase-a-strategy.md` | §9.1.1 volume ordinal, §9.2 `country_code`, §9.3 brand fields, §9.4 hygiene mechanics, §9.5 topic operations, §9.6 / §9.6.1 in full, §9.7 tag set, §10 action column | Together with core `phase-a-strategy.md`, before drafting or revising any recommendation and before sign-off |
+| `references/phase-a-strategy.md` | §9.1 credit budget per allocation direction, §9.1.1 volume ordinal, §9.2 `country_code`, §9.3 brand fields, §9.4 hygiene mechanics, §9.5 topic operations, §9.6 / §9.6.1 in full, §9.7 tag set, §10 action column | Together with core `phase-a-strategy.md`, before drafting or revising any recommendation and before sign-off |
 | `references/pattern-library.md` | §11 — Peec parts, §11.6 in full | When a core pattern's fix points at the companion; always before any write or report call a pattern prescribes; §11.6 whenever `list_models(is_active=true)` returns 3 or fewer engines |
-| `references/phase-a-write.md` | §12 in full — pre-flight, wave order, concurrency, seed lifecycle, verification, measurement window | After core §12 principles, before executing any write wave against the Peec project |
+| `references/phase-a-write.md` | §12 in full — pre-flight (incl. topic-name collisions, the credit total and the gate 15 language check), wave order, concurrency, seed lifecycle, verification, measurement window | After core §12 principles, before executing any write wave against the Peec project |
 | `references/phase-a-analyse.md` | §13 in full — detection spot-check, sweep depth, cohort arithmetic, findings hand-off, maturity tiers, `get_actions` pipeline, shopping queries, deferred-items queue | After core §13 principles, at the start of every Analyse step, before pulling any report |
 | `references/phase-b-deliverable.md` | §14 — Peec parts (report calls behind §14.2/14.3/14.6/14.10/14.12/14.15) | Together with core §14 whenever Phase B is triggered, offered or timed |
 | `references/quality-gates.md` | §15 — the Peec call or field that verifies each core gate item | Together with core §15 at every phase transition |

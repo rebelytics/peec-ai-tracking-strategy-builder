@@ -25,6 +25,37 @@ Before executing:
    to catch any drift since Intake.
 3. **Count reconciliation preview.** For each entity type, predict
    `expected_final = initial − deleted + created`. Print the prediction.
+4. **Topic-name collisions resolved in the plan.** `create_topics`
+   skips any name that matches an existing topic **case-insensitively**
+   — it does not create a second one and it does not fail loudly. Where
+   old and new structures are to run side by side, compare every planned
+   topic name against `list_topics` (lower-cased) and rename the
+   colliding ones **in the plan and the sign-off** before the wave.
+   Failure shape: colliding topics get renamed ad hoc mid-wave, and the
+   workbook, the sign-off and the project then disagree on what the
+   topics are called (§3.6 label travel).
+5. **Credit total computed and compared before the first create.**
+   Required credits for the period = **all** prompts that will be active
+   after the write (existing kept + new) × active engines
+   (`list_models(is_active=true)`) × run-days (30 at daily cadence,
+   §9.6.1). Compare with the plan's allocation from the intake state and
+   **report any shortfall as a total**, not per batch. The platform's
+   error — "Allocated credits of N exceeded. Required: M" — names the
+   requirement of the one batch that tripped it, not of the write:
+   where the allocation exactly equals the pre-write active-prompt cost,
+   the first batch reads as a near miss while the full write may need
+   several times the allocation. The credit
+   check belongs before the wave; the direction it answers (fixed
+   allocation, or allocation to buy) is core §9.1.0 and §9.1 here.
+6. **Core gate 15 (language validation) has run over every prompt in
+   every language of the create wave**, and every hit is fixed in the
+   text. On Peec the cost of a miss is fixed by the platform: prompt
+   `text` cannot be edited (`peec-ai-mcp` §7.13), so each fix is an
+   archive-or-delete plus a recreate, the archived prompts stay in the
+   project, and the recreated prompts start their history from zero.
+   Failure shape: every prompt in the language nobody validated goes
+   live broken in every market that uses it, and each one has to be
+   replaced this way.
 
 ### 12.2 Wave execution order
 
@@ -39,7 +70,10 @@ See `peec-ai-mcp` §6.5 for the wave pattern with concurrent batching.
    (see `peec-ai-mcp` §7.19).
 4. **Delete old brands** (auto-selected non-commercial ones).
 5. **Create or update topics.** Use `update_topic` in place where
-   possible; otherwise create-new + migrate-prompts + delete-old.
+   possible; otherwise create-new + migrate-prompts + delete-old. Names
+   were de-collided in the §12.1 pre-flight; verify with `list_topics`
+   after the wave that every planned topic exists under its planned
+   name, because a case-insensitive match is skipped silently.
 6. **Update existing prompts.** Add tags via `update_prompt.tag_ids`
    (full replacement — see `peec-ai-mcp` §7.14; fetch current tags
    and merge before writing). Move topics via
