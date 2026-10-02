@@ -168,7 +168,11 @@ on every platform and need no Peec-specific step.
   core's; on Peec the realised mix is `list_prompts` grouped by
   `country_code`, `topic_id` and the intent / brand-mention `tag_ids`
   (§9.4, §9.7), run on the planned set before the write wave and on the
-  `list_*` reconciliation after it.
+  `list_*` reconciliation after it. The instrument share is counted from
+  each prompt's `text` with the core §9.1.4 head list, not read off the
+  intent `tag_ids`, which carry whatever misfiling set them; a prompt
+  whose tag disagrees with its text is a keep-with-retagging disposition
+  (§10).
 - **Core gate 13 "Service grounding":** rule is the core's and needs no
   Peec read; run it before the prompt wave, because `text` is immutable
   after creation (`peec-ai-mcp` §7.13) and a prompt that fails it
