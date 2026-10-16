@@ -1,7 +1,7 @@
 ---
 name: "peec-ai-tracking-strategy-builder"
 description: "Peec AI companion to the platform-agnostic `ai-visibility-tracking-strategy-builder` skill — build or refine a Peec AI tracking strategy as an iterative workflow (Intake → Strategy → Write → Analyse, plus an optional stakeholder presentation), with this skill holding everything Peec-specific: MCP reads and gaps, brand/topic/tag fields, plan-tier engine gating, write waves and verification, Analyse recipes over Peec reports. Load whenever the user mentions Peec setup, Peec onboarding, \"what should we track in Peec\", Peec prompt rationalisation, or Peec rebuild; also on Phase B / retrospective requests about an existing Peec strategy (\"explain our Peec setup\", \"document our tracking strategy\"). Requires the core skill `ai-visibility-tracking-strategy-builder` loaded alongside; companion to `peec-ai-mcp` (recommended; tool mechanics)."
-version: 3.3.0
+version: 3.3.1
 license: CC-BY-4.0
 origin: https://github.com/rebelytics/peec-ai-tracking-strategy-builder
 maintainer: Eoghan Henn / rebelytics (eoghan@rebelytics.com)

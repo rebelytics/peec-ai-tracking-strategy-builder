@@ -131,6 +131,19 @@ the core's "tool-suggested lists skew to reference and UGC sites" (§4.6).
 
 The overrides (single-TLD brand; conflicted TLDs) are in the core.
 
+**Alias pass (core §9.3).** Every brand object — own brand and
+competitor alike — carries `aliases` (array) and `regex` per the MCP
+tool schema (`create_brand` / `update_brand`, `peec-ai-mcp`), so the
+core's full alias pass fits the field: acronym, hyphenation and spacing
+variants, declined forms, legal-form suffix, other-language names.
+Peec matches names and aliases as plain substrings, not whole words
+(`peec-ai-mcp` §7.38): a declined form whose stem differs from the
+nominative still needs its own alias, and a short acronym alias needs a
+word-boundary `regex` or it collides with unrelated organisations. Run
+the core's post-first-run positive control over the branded cohort: a
+branded prompt at zero own-brand visibility after the first run is a
+missing alias before it is a finding.
+
 #### Competitor fields and the `[Sister]` prefix rule
 
 Commercial competitors go on the roster with `is_own=false`. For each of
