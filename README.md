@@ -2,6 +2,8 @@
 
 Open-source **Peec AI companion** to the platform-agnostic [`ai-visibility-tracking-strategy-builder`](https://github.com/rebelytics/ai-visibility-tracking-strategy-builder) skill, for building or refining a [Peec AI](https://peec.ai) tracking strategy end-to-end. Load both into any MCP-capable AI agent (Claude, Cursor, Codex, n8n, etc.) to run a layered data intake, produce a prescriptive strategy recommendation, and write the result directly to the Peec project via the Peec MCP.
 
+Part of the [Open Skill Library](https://github.com/rebelytics/one-skill-to-rule-them-all/blob/main/OPEN-SKILL-LIBRARY.md), the open-source agent skills maintained with Task Observer.
+
 **Two skills, one workflow.** The core skill holds the methodology — intake rings, allocation methods, the cardinality rule for topics versus tags, the three-way brand-mention split, the prompt disposition framework, the pattern library, the stakeholder-presentation rules and the quality gates. This skill holds everything Peec-specific: MCP reads and known gaps, brand/topic/tag field mechanics, plan-tier engine gating, write waves and verification, the Analyse recipes over Peec's reports, and Peec-only patterns. Section numbers are shared across both, so every "§N — Peec implementation" part here extends the core's §N.
 
 ## What this skill does
