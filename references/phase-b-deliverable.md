@@ -1,6 +1,6 @@
 # Phase B — Stakeholder deliverable (§14 — Peec implementation)
 
-Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn / [rebelytics.com](https://rebelytics.com)). This file holds the Peec-specific part of §14; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family.
+Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn and contributors). This file holds the Peec-specific part of §14; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family.
 
 **Load trigger:** Read together with core §14 whenever Phase B is triggered, offered, or being timed — specifically before the §14.6 data-surface enumeration, before computing any combined-brand figure (§14.2, §14.3), before a topic-priority slide (§14.10), before a `get_actions` review slide (§14.12), and before writing provenance lines in a §14.15 handoff.
 

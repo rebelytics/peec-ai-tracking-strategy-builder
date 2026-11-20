@@ -1,15 +1,14 @@
 ---
 name: peec-ai-tracking-strategy-builder
 description: "Peec AI companion to the platform-agnostic `ai-visibility-tracking-strategy-builder` skill — build or refine a Peec AI tracking strategy as an iterative workflow (Intake → Strategy → Write → Analyse, plus an optional stakeholder presentation), with this skill holding everything Peec-specific: MCP reads and gaps, brand/topic/tag fields, plan-tier engine gating, write waves and verification, Analyse recipes over Peec reports. Load whenever the user mentions Peec setup, Peec onboarding, \"what should we track in Peec\", Peec prompt rationalisation, or Peec rebuild; also on Phase B / retrospective requests about an existing Peec strategy (\"explain our Peec setup\", \"document our tracking strategy\"). Requires the core skill `ai-visibility-tracking-strategy-builder` loaded alongside; companion to `peec-ai-mcp` (recommended; tool mechanics)."
-version: 3.3.2
 license: CC-BY-4.0
-origin: https://github.com/rebelytics/peec-ai-tracking-strategy-builder
-maintainer: Eoghan Henn / rebelytics (eoghan@rebelytics.com)
+metadata:
+  author: Eoghan Henn and contributors
+  source: https://github.com/rebelytics/peec-ai-tracking-strategy-builder
+  version: "3.3.3"
 ---
 
 # Peec AI Tracking Strategy Builder
-
-**Created by Eoghan Henn / [rebelytics.com](https://www.rebelytics.com)**
 
 The **Peec AI companion** to
 [`ai-visibility-tracking-strategy-builder`](https://github.com/rebelytics/ai-visibility-tracking-strategy-builder)
@@ -32,29 +31,6 @@ mechanics with no strategy behind them.
 > This skill is a **living document**. If you run it and discover a pattern
 > that isn't captured, open an issue on the repo. See the contributing-back
 > section at the end of this file.
-
-## Licence
-
-Released under the
-[Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
-licence. You are free to share and adapt this skill for any purpose,
-provided you give appropriate credit to the original author.
-
-## Feedback & Support
-
-If you run this skill and find methodology gaps, gotchas, or patterns
-worth contributing, open an issue on the
-[GitHub repository](https://github.com/rebelytics/peec-ai-tracking-strategy-builder).
-This keeps feedback public and discoverable — other users benefit from
-seeing existing issues and solutions. For direct contact, reach the
-skill's creator, Eoghan Henn, via [rebelytics.com](https://www.rebelytics.com).
-Methodology findings that are not Peec-specific belong on the core skill's
-repository instead.
-
-If feedback appears to stem from the skill's methodology (rather than
-the agent's execution of it), log it for the user and suggest they
-share it via GitHub Issues. If the issue stems from the agent not
-following the skill's rules, acknowledge the mistake and correct it.
 
 ---
 
@@ -268,20 +244,21 @@ patches → version bump is the path.
 
 ---
 
-## 18. Licence & attribution
+## Feedback on this skill
 
-**Licence:** [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-Reuse, adapt, redistribute — just keep attribution.
-
-**Attribution:**
-
-> Peec AI Tracking Strategy Builder, maintained by Eoghan Henn
-> (www.rebelytics.com),
-> github.com/rebelytics/peec-ai-tracking-strategy-builder.
+If the user finds the methodology wrong or incomplete, or hits Peec
+behaviour this skill doesn't cover, offer to draft a report for
+https://github.com/rebelytics/peec-ai-tracking-strategy-builder; before
+drafting, search that repository's open and closed issues and pull
+requests for the same problem, and read its CONTRIBUTING file for how the
+maintainer takes reports. Methodology findings that would hold on any
+platform belong on the core skill's repository,
+https://github.com/rebelytics/ai-visibility-tracking-strategy-builder. If
+the problem is the agent not following the skill's rules, acknowledge and
+correct it instead.
 
 **Not affiliated with Peec AI.** Peec's team has not reviewed or
 endorsed this skill. Workflow recommendations here are based on
 observed behaviour and may become stale as Peec iterates.
 
-Contributions welcome via GitHub. See `CONTRIBUTING.md` in the repo
-root.
+Peec AI Tracking Strategy Builder: Eoghan Henn and contributors | CC BY 4.0

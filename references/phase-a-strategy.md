@@ -1,6 +1,6 @@
 # Phase A — Strategy — Peec implementation (§9–§10)
 
-Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn / [rebelytics.com](https://www.rebelytics.com)). This file holds the Peec-specific part of §9–§10; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family — the section map in `SKILL.md` says where each § lives.
+Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn and contributors). This file holds the Peec-specific part of §9–§10; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family — the section map in `SKILL.md` says where each § lives.
 
 **Load trigger:** Read together with the core `references/phase-a-strategy.md` before drafting or revising any strategy recommendation for a Peec project, and again before the strategy sign-off. §10 applies to existing projects only.
 

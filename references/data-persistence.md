@@ -1,6 +1,6 @@
 # Data persistence — Peec implementation (§7)
 
-Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn / [rebelytics.com](https://www.rebelytics.com)). This file holds the Peec-specific part of §7; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family.
+Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn and contributors). This file holds the Peec-specific part of §7; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family.
 
 **Load trigger:** Read immediately after the core skill's §7 file, when initialising or resuming a Peec project workspace and before writing any loop artefact.
 

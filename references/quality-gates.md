@@ -1,6 +1,6 @@
 # Quality gates — Peec implementation (§15)
 
-Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn / [rebelytics.com](https://www.rebelytics.com)). This file holds the Peec-specific part of §15; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family — the section map in `SKILL.md` says where each § lives.
+Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn and contributors). This file holds the Peec-specific part of §15; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family — the section map in `SKILL.md` says where each § lives.
 
 **Load trigger:** Read together with the core `references/quality-gates.md` at every phase transition. The core file lists every gate item; this file says, for the items that can only be checked through Peec tools or fields, which call or field verifies them. A failed gate item blocks the transition regardless of which file it is listed in.
 

@@ -1,6 +1,6 @@
 # Pattern library — Peec implementation (§11)
 
-Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn / [rebelytics.com](https://www.rebelytics.com)). This file holds the Peec-specific part of §11; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family — the section map in `SKILL.md` says where each § lives.
+Part of the **peec-ai-tracking-strategy-builder** skill (CC BY 4.0 — Eoghan Henn and contributors). This file holds the Peec-specific part of §11; the platform-agnostic rules are in the core skill `ai-visibility-tracking-strategy-builder`, which must be loaded alongside. Section numbers are global across the skill family — the section map in `SKILL.md` says where each § lives.
 
 **Load trigger:** Read the core `references/pattern-library.md` first (skim its contents list during every Strategy and every Analyse step). Open this file whenever a core pattern's fix says "see §11.N in the platform companion", and always before executing any Peec write or report call that a pattern prescribes. §11.6 lives here in full — read it whenever `list_models(is_active=true)` returns 3 or fewer engines.
 
